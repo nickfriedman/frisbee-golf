@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>Shapes (Three.js)</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel=stylesheet href="css/base.css"/>
+</head>
+<body>
+
+<script src="js/Three.js"></script>
+<script src="js/Detector.js"></script>
+<script src="js/Stats.js"></script>
+<script src="js/OrbitControls.js"></script>
+<script src="js/THREEx.KeyboardState.js"></script>
+<script src="js/THREEx.FullScreen.js"></script>
+<script src="js/THREEx.WindowResize.js"></script>
+
+<script type='text/javascript' src='js/DAT.GUI.min.js'></script>
+
+<!-- jQuery code to display an information button and box when clicked. -->
+<script src="js/jquery-1.9.1.js"></script>
+<script src="js/jquery-ui.js"></script>
+<link rel=stylesheet href="css/jquery-ui.css" />
+<link rel=stylesheet href="css/info.css"/>
+<script src="js/info.js"></script>
+<div id="infoButton"></div>
+<div id="infoBox" title="Demo Information">
+This three.js demo is part of a collection at
+<a href="http://stemkoski.github.io/Three.js/">http://stemkoski.github.io/Three.js/</a>
+</div>
+<!-- ------------------------------------------------------------ -->
+
+<div id="ThreeJS" style="position: absolute; left:0px; top:0px"></div>
+<script>
+/*
+	Three.js "tutorials by example"
+	Author: Lee Stemkoski
+	Date: July 2013 (three.js v59dev)
+*/
+
+// MAIN
+
+// standard global variables
+var container, scene, camera, renderer, controls, stats;
+var keyboard = new THREEx.KeyboardState();
+var clock = new THREE.Clock();
+// custom global variables
+var cube;
+var sphere;
+var torusk;
+var pyramid;
+var torus;
+var shape;
+var shapelist;
+var parameters;
+var gui;
+var light;
+
+init();
+animate();
+
+// FUNCTIONS 		
+function init() 
+{
+	// SCENE
+	scene = new THREE.Scene();
+	// CAMERA
+	var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
+	var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
+	camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+	scene.add(camera);
+	camera.position.set(0,150,400);
+	camera.lookAt(scene.position);	
+	// RENDERER
+	if ( Detector.webgl )
+		renderer = new THREE.WebGLRenderer( {antialias:true} );
+	else
+		renderer = new THREE.CanvasRenderer(); 
+	renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+	container = document.getElementById( 'ThreeJS' );
+	container.appendChild( renderer.domElement );
+	// EVENTS
+	THREEx.WindowResize(renderer, camera);
+	THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
+	// CONTROLS
+	controls = new THREE.OrbitControls( camera, renderer.domElement );
+	// STATS
+	stats = new Stats();
+	stats.domElement.style.position = 'absolute';
+	stats.domElement.style.bottom = '0px';
+	stats.domElement.style.zIndex = 100;
+	container.appendChild( stats.domElement );
+	// LIGHT
+	light = new THREE.PointLight(0xffffff);
+	light.position.set(-100,150,100);
+	// scene.add(light);
+
+
+	// need to add an ambient light
+	//  for ambient colors to be visible
+	// make the ambient light darker so that
+	//  it doesn't overwhelm (like emmisive light)
+	var light2 = new THREE.AmbientLight(0x333333); 
+	light2.position.set( light.position );
+	scene.add(light2);
+	
+	var lightbulbGeometry = new THREE.SphereGeometry( 10, 16, 8 );
+	var lightbulbMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, transparent: true,  opacity: 0.8, blending: THREE.AdditiveBlending } );
+	var wireMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true } );
+	var materialArray = [lightbulbMaterial, wireMaterial];
+	var lightbulb = THREE.SceneUtils.createMultiMaterialObject( lightbulbGeometry, materialArray );
+	lightbulb.position = light.position;
+	scene.add(lightbulb);
+	scene.add(light);
+
+	// FLOOR
+	var floorTexture = new THREE.ImageUtils.loadTexture( 'images/checkerboard.jpg' );
+	floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
+	floorTexture.repeat.set( 10, 10 );
+	var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
+	var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
+	var floor = new THREE.Mesh(floorGeometry, floorMaterial);
+	floor.position.y = -0.5;
+	floor.rotation.x = Math.PI / 2;
+	//scene.add(floor);
+	// SKYBOX/FOG
+	// var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
+	// var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
+	// var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
+	// scene.add(skyBox);
+	var imagePrefix = "images/dawnmountain-";
+	var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
+	var imageSuffix = ".png";
+	var skyGeometry = new THREE.CubeGeometry( 5000, 5000, 5000 );	
+	
+	var materialArray = [];
+	for (var i = 0; i < 6; i++)
+		materialArray.push( new THREE.MeshBasicMaterial({
+			map: THREE.ImageUtils.loadTexture( imagePrefix + directions[i] + imageSuffix ),
+			side: THREE.BackSide
+		}));
+	var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
+	var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
+	scene.add( skyBox );
+	//scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
+	
+	////////////
+	// CUSTOM //
+	////////////
+	
+	// Using wireframe materials to illustrate shape details.
+	var darkMaterial = new THREE.MeshBasicMaterial( { color: 0xffffcc } );
+	var wireframeMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true, transparent: true } );
+	var shapeMaterial = new THREE.MeshPhongMaterial( { color:0xff0000, transparent:true, opacity:1 } );
+	var multiMaterial = [darkMaterial, wireframeMaterial]; 
+
+	// cube
+	cube = new THREE.Mesh( 
+		new THREE.CubeGeometry(50, 50, 50, 2, 2, 2), 
+		shapeMaterial );
+	cube.position.set(-200, 50, 0);
+	scene.add( cube );
+
+	// sphere
+	sphere = new THREE.Mesh( 
+		new THREE.SphereGeometry( 40, 32, 16 ), 
+		shapeMaterial );
+	sphere.position.set(-100, 50, 0);
+	scene.add( sphere );
+
+	// pyramid
+	pyramid = new THREE.Mesh( 
+		// radiusAtTop, radiusAtBottom, height, segmentsAroundRadius, segmentsAlongHeight,
+		new THREE.CylinderGeometry( 0, 30, 100, 4, 4 ), 
+		shapeMaterial );
+	pyramid.position.set(0, 50, 0);
+	scene.add( pyramid );
+
+	// torus
+	torus = new THREE.Mesh( 
+	    // radius of entire torus, diameter of tube (less than total radius), 
+		// sides per cylinder segment, cylinders around torus ("sides")
+		new THREE.TorusGeometry( 30, 20, 16, 40 ),
+		shapeMaterial );
+	torus.position.set(100, 50, 0);
+	scene.add( torus );
+
+	// torus knot
+	torusk = new THREE.Mesh( 
+		// total knot radius, tube radius, number cylinder segments, sides per cyl. segment,
+		//  p-loops around torus, q-loops around torus
+		new THREE.TorusKnotGeometry( 30, 6, 160, 10, 3, 7 ), 
+		shapeMaterial );
+	torusk.position.set(200, 50, 0);
+	scene.add( torusk );
+
+	shapelist = [cube, sphere, torusk, pyramid, torus];
+
+	var axes = new THREE.AxisHelper(10);
+	scene.add(axes);
+
+	
+	gui = new dat.GUI();
+	
+	parameters = 
+	{
+		x: -100, y: 150, z: 100,
+		color:  "#ff0000", // color (change "#" to "0x")
+		colorA: "#000000", // color (change "#" to "0x")
+		colorE: "#000033", // color (change "#" to "0x")
+		colorS: "#ffff00", // color (change "#" to "0x")
+        shininess: 30,
+		opacity: 1, 
+		visible: true,
+		material: "Phong",
+		border: true,
+		reset: function() { resetShape() }
+	};
+
+	
+	var folder1 = gui.addFolder('Position');
+	var lightX = folder1.add( parameters, 'x' ).min(-200).max(200).step(1).listen();
+	var lightY = folder1.add( parameters, 'y' ).min(-200).max(200).step(1).listen();
+	var lightZ = folder1.add( parameters, 'z' ).min(-200).max(200).step(1).listen();
+	folder1.open();
+	
+	lightX.onChange(function(value) 
+	{   light.position.x = value;   });
+	lightY.onChange(function(value) 
+	{   light.position.y = value;   });
+	lightZ.onChange(function(value) 
+	{   light.position.z = value;   });
+
+	var outlineMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000, side: THREE.BackSide } );
+	var outlineMesh1 = new THREE.Mesh( new THREE.CubeGeometry(50, 50, 50, 2, 2, 2), outlineMaterial );
+	var outlineMesh2 = new THREE.Mesh( new THREE.SphereGeometry( 40, 32, 16 ), outlineMaterial );
+	var outlineMesh3 = new THREE.Mesh( new THREE.TorusKnotGeometry( 30, 6, 160, 10, 3, 7 ), outlineMaterial );
+	var outlineMesh4 = new THREE.Mesh( new THREE.CylinderGeometry( 0, 30, 100, 4, 4 ), outlineMaterial );
+	var outlineMesh5 = new THREE.Mesh( new THREE.TorusGeometry( 30, 20, 16, 40 ), outlineMaterial );
+	outlineMesh1.position = cube.position;
+	outlineMesh2.position = sphere.position;
+	outlineMesh3.position = torusk.position;
+	outlineMesh4.position = pyramid.position;
+	outlineMesh5.position = torus.position;
+	outlineMesh1.scale.multiplyScalar(1.05);
+	outlineMesh2.scale.multiplyScalar(1.05);
+	outlineMesh3.scale.multiplyScalar(1.05);
+	outlineMesh4.scale.multiplyScalar(1.05);
+	outlineMesh5.scale.multiplyScalar(1.05);
+	scene.add( outlineMesh1 );
+	scene.add( outlineMesh2 );
+	scene.add( outlineMesh3 );
+	scene.add( outlineMesh4 );
+	scene.add( outlineMesh5 );
+
+	
+	var shapeColor = gui.addColor( parameters, 'color' ).name('Color (Diffuse)').listen();
+	shapeColor.onChange(function(value) // onFinishChange
+	{   for (var i=0; i< shapelist.length; i++){
+			shape = shapelist[i]; 
+			shape.material.color.setHex( value.replace("#", "0x") ); }  }); 
+	var shapeColorA = gui.addColor( parameters, 'colorA' ).name('Color (Ambient)').listen();
+	shapeColorA.onChange(function(value) // onFinishChange
+	{   for (var i=0; i< shapelist.length; i++){
+			shape = shapelist[i]; shape.material.ambient.setHex( value.replace("#", "0x") ); }  });
+	var shapeColorE = gui.addColor( parameters, 'colorE' ).name('Color (Emissive)').listen();
+	shapeColorE.onChange(function(value) // onFinishChange
+	{   for (var i=0; i< shapelist.length; i++){
+			shape = shapelist[i];  shape.material.emissive.setHex( value.replace("#", "0x") ); }  });
+	var shapeColorS = gui.addColor( parameters, 'colorS' ).name('Color (Specular)').listen();
+	shapeColorS.onChange(function(value) // onFinishChange
+	{   for (var i=0; i< shapelist.length; i++){
+			shape = shapelist[i]; shape.material.specular.setHex( value.replace("#", "0x") ); }  });
+	var shapeShininess = gui.add( parameters, 'shininess' ).min(0).max(60).step(1).name('Shininess').listen();
+	shapeShininess.onChange(function(value)
+	{   for (var i=0; i< shapelist.length; i++){
+			shape = shapelist[i]; shape.material.shininess = value;  } });
+	var shapeOpacity = gui.add( parameters, 'opacity' ).min(0).max(1).step(0.01).name('Opacity').listen();
+	shapeOpacity.onChange(function(value)
+	{   for (var i=0; i< shapelist.length; i++){
+			shape = shapelist[i]; shape.material.opacity = value; }  });
+	var border = gui.add(parameters, 'border').name('Border').listen();
+	border.onChange(function(value) {
+		outlineMesh5.visible = value;
+		outlineMesh4.visible = value;
+		outlineMesh3.visible = value;
+		outlineMesh2.visible = value;
+		outlineMesh1.visible = value;
+
+	});
+	var shapeMaterial = gui.add( parameters, 'material', [ "Basic", "Lambert", "Phong", "Wireframe" ] ).name('Material Type').listen();
+	shapeMaterial.onChange(function(value) 
+	{   updateShape();   });
+		
+	gui.add( parameters, 'reset' ).name("Reset Shape Parameters");
+
+	gui.open();
+
+	updateShape();
+	
+}
+
+function updateShape()
+{
+	for (i=0; i< shapelist.length; i++){
+		shape = shapelist[i];
+
+		var value = parameters.material;
+		var newMaterial;
+		if (value == "Basic")
+			newMaterial = new THREE.MeshBasicMaterial( { color: 0x000000 } );
+		else if (value == "Lambert")
+			newMaterial = new THREE.MeshLambertMaterial( { color: 0x000000 } );
+		else if (value == "Phong")
+			newMaterial = new THREE.MeshPhongMaterial( { color: 0x000000 } );
+		else // (value == "Wireframe")
+			newMaterial = new THREE.MeshBasicMaterial( { wireframe: true } );
+		shape.material = newMaterial;
+		
+		light.position.x = parameters.x;
+		light.position.y = parameters.y;
+		light.position.z = parameters.z;
+		shape.material.color.setHex( parameters.color.replace("#", "0x") );
+		if (shape.material.ambient)
+			shape.material.ambient.setHex( parameters.colorA.replace("#", "0x") );
+	    if (shape.material.emissive)
+			shape.material.emissive.setHex( parameters.colorE.replace("#", "0x") ); 
+		if (shape.material.specular)
+			shape.material.specular.setHex( parameters.colorS.replace("#", "0x") ); 
+	    if (shape.material.shininess)
+			shape.material.shininess = parameters.shininess;
+		shape.material.opacity = parameters.opacity;  
+		shape.material.transparent = true;
+		shape.material.visible = true;
+	}
+
+}
+
+function resetShape()
+{
+	parameters.x = 0;
+	parameters.y = 30;
+	parameters.z = 0;
+	parameters.color = "#ff0000";
+	parameters.colorA = "#000000";
+	parameters.colorE = "#000033";
+	parameters.colorS = "#ffff00";
+    parameters.shininess = 30;
+	parameters.opacity = 1;
+	parameters.visible = true;
+	parameters.material = "Phong";
+	parameters.border = true;
+	updateShape();
+}
+
+
+
+
+function animate() 
+{
+    requestAnimationFrame( animate );
+	render();		
+	update();
+}
+
+function update()
+{
+	if ( keyboard.pressed("z") ) 
+	{ 
+		// do something
+	}
+	
+	controls.update();
+	stats.update();
+}
+
+function render() 
+{
+	renderer.render( scene, camera );
+}
+
+</script>
+
+</body>
+</html>

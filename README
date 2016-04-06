@@ -1,0 +1,13 @@
+README
+
+Nicholas Friedman
+
+1. Lambert lighting models scatter the light that it reflects equally in all directions and the intenesity depends on angle of incoming light. The phong model uses four vectors to calculate a color for a point. 
+
+2. My extra feature is a border around the shapes and a different background. I integrated it beacuse it didn't compromise the style of the scene and I thought it looked cool.
+
+3. I learned how to change the lighting, and move objects around the scene, and update the scene with the GUI. I am most satisfied by figuring out how to change all the shapes at once.
+
+4. The biggest challenge was also what I was most satisfied in accomplishing.
+
+5. I am thinking about simulating a baseball game. The theme is something to do with sports. 
