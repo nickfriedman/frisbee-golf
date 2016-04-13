@@ -31,12 +31,16 @@ var container, scene, camera, renderer, controls, stats;
 var keyboard = new THREEx.KeyboardState();
 var clock = new THREE.Clock();
 // custom global variables
+<<<<<<< HEAD
 var cube;
 var model = null;
 
 var modelDirectory = "models/";
 
 
+=======
+var disc;
+>>>>>>> origin/master
 
 
 init();
@@ -78,50 +82,21 @@ function init()
 	light.position.set(0,250,0);
 	scene.add(light);
 	// FLOOR
+<<<<<<< HEAD
 	THREE.ImageUtils.crossOrigin = '';
 	var floorTexture = THREE.ImageUtils.loadTexture('images/grass-512.jpg');
 	//var floorTexture = new THREE.ImageUtils.loadTexture( 'images/grass-512.jpg' );
+=======
+	var floorTexture = new THREE.ImageUtils.loadTexture( 'images/grass.jpg' );
+>>>>>>> origin/master
 	floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
 	floorTexture.repeat.set( 10, 10 );
 	var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
 	var floorGeometry = new THREE.PlaneGeometry(5000, 5000, 10, 10);
 	var floor = new THREE.Mesh(floorGeometry, floorMaterial);
-	floor.position.y = -5.5;
+	floor.position.y = -5;
 	floor.rotation.x = Math.PI / 2;
 	scene.add(floor);
-
-	// var textureUrl	= 'images/grasslight-small.jpg'
-	// var texture	= THREE.ImageUtils.loadTexture(textureUrl);
-	// texture.wrapS	= THREE.RepeatWrapping;
-	// texture.wrapT	= THREE.RepeatWrapping;
-	// texture.repeat.x= 10
-	// texture.repeat.y= 10
-	// texture.anisotropy = renderer.getMaxAnisotropy()
-	// // build object3d
-	// var geometry	= new THREE.PlaneGeometry(20, 20)
-	// var material	= new THREE.MeshPhongMaterial({
-	// 	map	: texture,
-	// 	emissive: 'green',
-	// })
-	// var object3d	= new THREE.Mesh(geometry, material)
-	// object3d.rotateX(-Math.PI/2)
-	// scene.add(object3d)
-
-	// var nTufts	= 5000
-	// var positions	= new Array(nTufts)
-	// for(var i = 0; i < nTufts; i++){
-	// 	var position	= new THREE.Vector3()
-	// 	position.x	= (Math.random()-0.5)*20
-	// 	position.z	= (Math.random()-0.5)*20
-	// 	positions[i]	= position
-	// }
-	// var mesh	= THREEx.createGrassTufts(positions)
-	// scene.add(mesh)
-	// // load the texture
-	// var textureUrl		= THREEx.createGrassTufts.baseUrl+'images/grass02.png'
-	// var material		= mesh.material
-	// material.map		= THREE.ImageUtils.loadTexture(textureUrl)
-	// material.alphaTest	= 0.7
 
 	var gui = new dat.GUI();
 	
@@ -144,6 +119,7 @@ function init()
 	var folder1 = gui.addFolder('Coordinates');
 	folder1.add( parameters, 'x' );
 	folder1.add( parameters, 'y' );
+	folder1.add( parameters, 'z' );
 	folder1.close();
 	gui.open();
 	////////////
@@ -154,7 +130,7 @@ function init()
 	var axes = new THREE.AxisHelper(100);
 	scene.add( axes );
 	
-	var imagePrefix = "images/dawnmountain-";
+	var imagePrefix = "images/nightsky_";
 	var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
 	var imageSuffix = ".png";
 	var skyGeometry = new THREE.CubeGeometry( 5000, 5000, 5000 );	
@@ -175,6 +151,11 @@ function init()
 	installModel(0);
 	
 
+	var geometry = new THREE.CylinderGeometry( 10, 10, 1, 60 );
+	var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+	var disc = new THREE.Mesh( geometry, material );
+	disc.position.set(0,0,0);
+	scene.add( disc );
 	
 }
 
@@ -270,25 +251,38 @@ function animate()
 
 function update()
 {
-	if ( keyboard.pressed("x") ) 
+	if ( keyboard.pressed("1") ) 
 	{ 
 		// do something
 		camera.position.set(0,20,100);
 	}
-	if ( keyboard.pressed("q") ) 
+	if ( keyboard.pressed("2") ) 
 	{ 
 		// do something
 		camera.position.set(0,5000,0);
 	}
-	if ( keyboard.pressed("w") ) 
+	if ( keyboard.pressed("3") ) 
 	{ 
 		// do something
 		camera.position.set(0,50,2000);
 	}	
+
+	var moveDistance = 200;
+	
+	if ( keyboard.pressed("left") ){
+		disc.position.x -= moveDistance;
+	}
+	if ( keyboard.pressed("right") )
+		disc.position.x += moveDistance;
+	if ( keyboard.pressed("down") )
+		disc.position.z -= moveDistance;
+	if ( keyboard.pressed("up") )
+		disc.position.z += moveDistance;
+
 	controls.update();
 	stats.update();
 }
-
+	
 function render() 
 {
 	renderer.render( scene, camera );
