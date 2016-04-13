@@ -15,7 +15,9 @@
 <script src="js/THREEx.KeyboardState.js"></script>
 <script src="js/THREEx.FullScreen.js"></script>
 <script src="js/THREEx.WindowResize.js"></script>
-<script src='threex.grass.js'></script>
+<!-- <script src='threex.grass.js'></script>
+ -->
+<script type='text/javascript' src='js/DAT.GUI.min.js'></script>
 
 
 <div id="ThreeJS" style="position: absolute; left:0px; top:0px"></div>
@@ -113,7 +115,30 @@ function init()
 	// var material		= mesh.material
 	// material.map		= THREE.ImageUtils.loadTexture(textureUrl)
 	// material.alphaTest	= 0.7
+
+	var gui = new dat.GUI();
 	
+	var parameters = 
+	{
+		a: 200, // numeric
+		b: 200, // numeric slider
+		c: false, // boolean (checkbox)
+		d: "#ff8800", // color (hex)
+		x: 0, y: 0, z: 0
+	};
+	// gui.add( parameters )
+	gui.add( parameters, 'a' ).name('Number');
+	gui.add( parameters, 'b' ).min(128).max(256).step(16).name('Wind');
+	gui.add( parameters, 'd' ).name('Night Mode');
+	
+	gui.addColor( parameters, 'd' ).name('Color');
+	
+	
+	var folder1 = gui.addFolder('Coordinates');
+	folder1.add( parameters, 'x' );
+	folder1.add( parameters, 'y' );
+	folder1.close();
+	gui.open();
 	////////////
 	// CUSTOM //
 	////////////
