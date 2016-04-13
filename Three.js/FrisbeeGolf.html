@@ -129,7 +129,7 @@ function init()
 	// gui.add( parameters )
 	gui.add( parameters, 'a' ).name('Number');
 	gui.add( parameters, 'b' ).min(128).max(256).step(16).name('Wind');
-	gui.add( parameters, 'd' ).name('Night Mode');
+	gui.add( parameters, 'c' ).name('Night Mode');
 	
 	gui.addColor( parameters, 'd' ).name('Color');
 	
@@ -177,7 +177,7 @@ function update()
 	if ( keyboard.pressed("x") ) 
 	{ 
 		// do something
-		camera.position.set(0,30,100);
+		camera.position.set(0,20,100);
 	}
 	if ( keyboard.pressed("q") ) 
 	{ 
