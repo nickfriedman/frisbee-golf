@@ -32,6 +32,11 @@ var keyboard = new THREEx.KeyboardState();
 var clock = new THREE.Clock();
 // custom global variables
 var cube;
+var model = null;
+
+var modelDirectory = "models/";
+
+
 
 
 init();
@@ -73,7 +78,9 @@ function init()
 	light.position.set(0,250,0);
 	scene.add(light);
 	// FLOOR
-	var floorTexture = new THREE.ImageUtils.loadTexture( 'images/grass-512.jpg' );
+	THREE.ImageUtils.crossOrigin = '';
+	var floorTexture = THREE.ImageUtils.loadTexture('images/grass-512.jpg');
+	//var floorTexture = new THREE.ImageUtils.loadTexture( 'images/grass-512.jpg' );
 	floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
 	floorTexture.repeat.set( 10, 10 );
 	var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
@@ -161,9 +168,97 @@ function init()
 	var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
 	var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
 	scene.add( skyBox );
+	
+	
+	
+	//add frisbee stuff
+	installModel(0);
+	
 
 	
 }
+
+
+function installModel(modelNumber) {
+    function callback(geometry,material) {  // callback function to be executed when loading finishes.
+        modelLoaded(geometry, [0,0,0]);
+        //document.getElementById("status").innerHTML = "";
+        
+    }
+    if (model) {
+        scene.remove(model);
+    }
+    //document.getElementById("status").innerHTML = "Loading<br>" + "frisbee.json";
+    var loader = new THREE.JSONLoader();
+    try {
+        loader.load(modelDirectory + "frisbee.json", callback);
+    }
+    catch (e) {
+        // Note: Will give an error if loading from the local file system
+        // on some browsers (Chrome, at least). 
+        document.getElementById("status").innerHTML =
+            "Could not<br>load model!<br><br>Note that<br>some browsers<br>cannot load<br>models from<br>a local disk.";
+    }
+}
+
+function modelLoaded(geometry, rotation) {
+
+    /* create the object from the geometry was loaded, with a white material. */
+       
+    var object = new THREE.Mesh(geometry,
+                        new THREE.MeshLambertMaterial( {color:"white"} ));
+
+    /* Determine the ranges of x, y, and z in the vertices of the geometry. */
+
+    var xmin = Infinity;
+    var xmax = -Infinity;
+    var ymin = Infinity;
+    var ymax = -Infinity;
+    var zmin = Infinity;
+    var zmax = -Infinity;
+    for (var i = 0; i < geometry.vertices.length; i++) {
+        var v = geometry.vertices[i];
+        if (v.x < xmin)
+            xmin = v.x;
+        else if (v.x > xmax)
+            xmax = v.x;
+        if (v.y < ymin)
+            ymin = v.y;
+        else if (v.y > ymax)
+            ymax = v.y;
+        if (v.z < zmin)
+            zmin = v.z;
+        else if (v.z > zmax)
+            zmax = v.z;
+    }
+    
+    /* translate the center of the object to the origin */
+    var centerX = (xmin+xmax)/2;
+    var centerY = (ymin+ymax)/2; 
+    var centerZ = (zmin+zmax)/2;
+    var max = Math.max(centerX - xmin, xmax - centerX);
+    max = Math.max(max, Math.max(centerY - ymin, ymax - centerY) );
+    max = Math.max(max, Math.max(centerZ - zmin, zmax - centerZ) );
+    var scale = 100/max;
+    object.position.set( -centerX, -centerY+1, -centerZ );
+    if (window.console) {
+       console.log("Loading finished, scaling object by " + scale);
+       console.log("Center at ( " + centerX + ", " + centerY + ", " + centerZ + " )");
+    }
+    
+    /* Create the wrapper, model, to scale and rotate the object. */
+    
+    model = new THREE.Object3D();
+    model.add(object);
+    model.scale.set(scale,scale,scale);
+    model.rotation.set(rotation[0],rotation[1],rotation[2]);
+	
+    scene.add(model);
+    render();
+	//update()
+}
+
+
 
 function animate() 
 {
@@ -171,6 +266,7 @@ function animate()
 	render();		
 	update();
 }
+
 
 function update()
 {
