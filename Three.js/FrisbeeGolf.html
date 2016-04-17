@@ -89,30 +89,7 @@ function init()
 	floor.rotation.x = Math.PI / 2;
 	scene.add(floor);
 
-	var gui = new dat.GUI();
-	
-	var parameters = 
-	{
-		a: 200, // numeric
-		b: 200, // numeric slider
-		c: false, // boolean (checkbox)
-		d: "#ff8800", // color (hex)
-		x: 0, y: 0, z: 0
-	};
-	// gui.add( parameters )
-	gui.add( parameters, 'a' ).name('Number');
-	gui.add( parameters, 'b' ).min(128).max(256).step(16).name('Wind');
-	gui.add( parameters, 'c' ).name('Night Mode');
-	
-	gui.addColor( parameters, 'd' ).name('Color');
-	
-	
-	var folder1 = gui.addFolder('Coordinates');
-	folder1.add( parameters, 'x' );
-	folder1.add( parameters, 'y' );
-	folder1.add( parameters, 'z' );
-	folder1.close();
-	gui.open();
+
 	////////////
 	// CUSTOM //
 	////////////
@@ -147,6 +124,37 @@ function init()
 	var disc = new THREE.Mesh( geometry, material );
 	disc.position.set(0,50,1900);
 	scene.add( disc );
+
+
+	var gui = new dat.GUI();
+	var parameters = 
+	{
+		a: 200, // numeric
+		b: 200, // numeric slider
+		c: false, // boolean (checkbox)
+		d: "#ffff00", // color (hex)
+		x: 0, y: 0, z: 0
+	};
+	// gui.add( parameters )
+	gui.add( parameters, 'a' ).name('Number');
+	gui.add( parameters, 'b' ).min(128).max(256).step(16).name('Wind');
+	gui.add( parameters, 'c' ).name('Night Mode');
+	
+	// gui.addColor( parameters, 'd' ).name('Disk Color');
+	var discColor = gui.addColor( parameters, 'd' ).name('Disk Color').listen();
+	discColor.onChange(function(value)
+	{disc.material.color.setHex( value.replace("#", "0x") );  });
+	
+	var folder1 = gui.addFolder('Coordinates');
+	folder1.add( parameters, 'x' );
+	folder1.add( parameters, 'y' );
+	folder1.add( parameters, 'z' );
+	folder1.close();
+
+
+
+
+	gui.open();
 	
 }
 
@@ -229,7 +237,6 @@ function modelLoaded(geometry, rotation) {
     render();
 	//update()
 }
-
 
 
 function animate() 
