@@ -117,14 +117,7 @@ function init()
 	
 
 	var shapeMaterial = new THREE.MeshPhongMaterial( { color:0xff0000, transparent:true, opacity:1 } );
-	// pyramid
-	pyramid = new THREE.Mesh( 
-		// radiusAtTop, radiusAtBottom, height, segmentsAroundRadius, segmentsAlongHeight,
-		new THREE.CylinderGeometry( 0, 20, 80, 3, 4 ), 
-		shapeMaterial );
-	pyramid.position.set(0, 10, 1800);
-	pyramid.rotateOnAxis( new THREE.Vector3(1,0,0), 275);
-	scene.add( pyramid );
+
 	
 	//add frisbee stuff
 	installModel(0);
@@ -136,6 +129,14 @@ function init()
 	disc.position.set(0,30,1900);
 	scene.add( disc );
 
+	// pyramid
+	pyramid = new THREE.Mesh( 
+		// radiusAtTop, radiusAtBottom, height, segmentsAroundRadius, segmentsAlongHeight,
+		new THREE.CylinderGeometry( 0, 10, 80, 3, 4 ), 
+		shapeMaterial );
+	pyramid.position.set(0, 10, -60);
+	pyramid.rotateOnAxis( new THREE.Vector3(1,0,0), 275);
+	disc.add( pyramid );
 
 	var gui = new dat.GUI();
 	var parameters = 
@@ -301,7 +302,7 @@ function animate()
 
 function update()
 {
-	var rotateAngle = Math.PI / 4 * clock.getDelta;   // pi/4 radians  per second
+	var rotateAngle = Math.PI / 16 * clock.getDelta();   // pi/8 radians  per second
 	var moveDistance = 200 * clock.getDelta();
 
 
@@ -325,21 +326,23 @@ function update()
 	if ( keyboard.pressed("left") ){
 		disc.position.x -= moveDistance;
 	}
-	else if ( keyboard.pressed("right") )
+	if ( keyboard.pressed("right") )
 		disc.position.x += moveDistance;
-	else if ( keyboard.pressed("down") )
+	if ( keyboard.pressed("down") )
 		disc.position.z += moveDistance;
-	else if ( keyboard.pressed("up") )
+	if ( keyboard.pressed("up") )
 		disc.position.z -= moveDistance;
 
 	//rotate direction arrow
-	var rotation_matrix = new THREE.Matrix4().identity();
-	if (keyboard.pressed("a")){
-		pyramid.rotateOnAxis( new THREE.Vector3(0,1,0), rotateAngle); 
+	// var rotation_matrix = new THREE.Matrix4().identity();
+	if (keyboard.pressed("A")){
+		// pyramid.rotateOnAxis( new THREE.Vector3(0,1,0), rotateAngle); 
+		disc.rotation.y +=rotateAngle;
 	}
-	else if ( keyboard.pressed("d") )
-		pyramid.rotateOnAxis( new THREE.Vector3(0,1,0), -rotateAngle);
-
+	else if ( keyboard.pressed("D") ) {
+		// pyramid.rotateOnAxis( new THREE.Vector3(0,1,0), -rotateAngle);
+		disc.rotation.y -=rotateAngle;
+	}
 	controls.update();
 	stats.update();
 }
