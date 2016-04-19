@@ -79,6 +79,10 @@ function init()
 	var light = new THREE.PointLight(0xffffff);
 	light.position.set(0,250,0);
 	scene.add(light);
+	//ambient light
+	var light2 = new THREE.AmbientLight(0x333333); 
+	light2.position.set( light.position );
+	scene.add(light2);
 	// FLOOR
 	THREE.ImageUtils.crossOrigin = '';
 	var floorTexture = THREE.ImageUtils.loadTexture('images/grass-512.jpg');
@@ -129,7 +133,7 @@ function init()
 	
 
 	var geometry = new THREE.CylinderGeometry( 10, 10, 1, 60 );
-	var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+	var material = new THREE.MeshLambertMaterial( {color: 0xffff00} );
     disc = new THREE.Mesh( geometry, material );
 	disc.position.set(0,40,1900);
 	scene.add( disc );
