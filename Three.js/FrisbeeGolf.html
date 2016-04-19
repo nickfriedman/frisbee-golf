@@ -162,7 +162,6 @@ function init()
 		powerdisc = value;
 		
 	});
-// console.log(power);
 	var daysky = gui.add( parameters, 'b').name("Day Mode").listen();
 	daysky.onChange( function(value) {
 		if(value) {
@@ -314,17 +313,17 @@ function update()
 
 	if ( keyboard.pressed("1") ) 
 	{ 
-		// do something
-		camera.position.set(0,20,100);
+		// View of Hole
+		camera.position.set(0,20,1000);
 	}
 	else if ( keyboard.pressed("2") ) 
 	{ 
-		// do something
+		// View from Above
 		camera.position.set(0,5000,0);
 	}
 	else if ( keyboard.pressed("3") ) 
 	{ 
-		// do something
+		// View from Behind disk
 		camera.position.set(0,50,2000);
 	}	
 
