@@ -119,7 +119,7 @@ function init()
 	scene.add( skyBox );
 	
 
-	var shapeMaterial = new THREE.MeshPhongMaterial( { color:0xff0000, transparent:true, opacity:1 } );
+	var shapeMaterial = new THREE.MeshPhongMaterial( { color:0xff0000, transparent:false, opacity:1 } );
 	// pyramid
 	pyramid = new THREE.Mesh( 
 		// radiusAtTop, radiusAtBottom, height, segmentsAroundRadius, segmentsAlongHeight,
@@ -227,7 +227,7 @@ function installModel(modelNumber) {
     //document.getElementById("status").innerHTML = "Loading<br>" + "frisbee.json";
     var loader = new THREE.JSONLoader();
     try {
-        loader.load(modelDirectory + "frisbee.json", callback);
+        loader.load(modelDirectory + "frishole.json", callback);
     }
     catch (e) {
         // Note: Will give an error if loading from the local file system
@@ -275,8 +275,8 @@ function modelLoaded(geometry, rotation) {
     var max = Math.max(centerX - xmin, xmax - centerX);
     max = Math.max(max, Math.max(centerY - ymin, ymax - centerY) );
     max = Math.max(max, Math.max(centerZ - zmin, zmax - centerZ) );
-    var scale = 100/max;
-    object.position.set( -centerX, -centerY+1, -centerZ );
+    var scale = 50/max;
+    object.position.set( -centerX, -centerY+1, -centerZ+35 );
     if (window.console) {
        console.log("Loading finished, scaling object by " + scale);
        console.log("Center at ( " + centerX + ", " + centerY + ", " + centerZ + " )");
