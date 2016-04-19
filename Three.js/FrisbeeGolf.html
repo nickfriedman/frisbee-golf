@@ -141,6 +141,7 @@ function init()
 	var parameters = 
 	{
 		a: 5, // numeric slider
+		p: 50, //numeric slider
 		b: false, //boolean (checkbox)
 		c: true, // boolean (checkbox)
 		d: "#ffff00", // color (hex)
@@ -150,12 +151,17 @@ function init()
 	gui.add( parameters, 'a' ).min(0).max(100).step(10).name('Wind');
 	// gui.add( parameters, 'c' ).name('Night Mode');
 
+	var power = gui.add( parameters, 'p').min(0).max(100).step(10).name('Power').listen();
+	power.onChange( function(value) {
+		power = value;
+	});
+console.log(power);
 	var daysky = gui.add( parameters, 'b').name("Day Mode").listen();
 	daysky.onChange( function(value) {
 		if(value) {
 			daysky.setValue(true);
 			nightsky.setValue(false);
-			var imagePrefix = "images/dawnmountain-";
+			// var imagePrefix = "images/dawnmountain-";
 			// var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
 			// var imageSuffix = ".png";
 			// var skyGeometry = new THREE.CubeGeometry( 5000, 5000, 5000 );
@@ -179,7 +185,7 @@ function init()
 		if (value) {
 			nightsky.setValue(true);
 			daysky.setValue(false);
-			var imagePrefix = "images/nightsky_";
+			// var imagePrefix = "images/nightsky_";
 			// var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
 			// var imageSuffix = ".png";
 			// var skyGeometry = new THREE.CubeGeometry( 5000, 5000, 5000 );
