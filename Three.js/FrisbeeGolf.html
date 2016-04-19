@@ -37,6 +37,9 @@ var modelDirectory = "models/";
 var disc;
 var pyramid;
 
+var ychange = 1;
+var powerdisc = 50;
+
 
 init();
 animate();
@@ -116,8 +119,20 @@ function init()
 	scene.add( skyBox );
 	
 
+<<<<<<< HEAD
 	var shapeMaterial = new THREE.MeshPhongMaterial( { color:0xff0000, transparent:true, opacity:1 } );
 
+=======
+	var shapeMaterial = new THREE.MeshPhongMaterial( { color:0xff0000, transparent:false, opacity:1 } );
+	// pyramid
+	pyramid = new THREE.Mesh( 
+		// radiusAtTop, radiusAtBottom, height, segmentsAroundRadius, segmentsAlongHeight,
+		new THREE.CylinderGeometry( 0, 20, 80, 3, 4 ), 
+		shapeMaterial );
+	pyramid.position.set(0, 10, 1800);
+	pyramid.rotateOnAxis( new THREE.Vector3(1,0,0), 275);
+	scene.add( pyramid );
+>>>>>>> origin/master
 	
 	//add frisbee stuff
 	installModel(0);
@@ -126,7 +141,7 @@ function init()
 	var geometry = new THREE.CylinderGeometry( 10, 10, 1, 60 );
 	var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
     disc = new THREE.Mesh( geometry, material );
-	disc.position.set(0,30,1900);
+	disc.position.set(0,40,1900);
 	scene.add( disc );
 
 	// pyramid
@@ -154,7 +169,8 @@ function init()
 
 	var power = gui.add( parameters, 'p').min(0).max(100).step(10).name('Power').listen();
 	power.onChange( function(value) {
-		power = value;
+		powerdisc = value;
+		
 	});
 // console.log(power);
 	var daysky = gui.add( parameters, 'b').name("Day Mode").listen();
@@ -224,7 +240,7 @@ function installModel(modelNumber) {
     //document.getElementById("status").innerHTML = "Loading<br>" + "frisbee.json";
     var loader = new THREE.JSONLoader();
     try {
-        loader.load(modelDirectory + "frisbee.json", callback);
+        loader.load(modelDirectory + "frishole.json", callback);
     }
     catch (e) {
         // Note: Will give an error if loading from the local file system
@@ -272,8 +288,8 @@ function modelLoaded(geometry, rotation) {
     var max = Math.max(centerX - xmin, xmax - centerX);
     max = Math.max(max, Math.max(centerY - ymin, ymax - centerY) );
     max = Math.max(max, Math.max(centerZ - zmin, zmax - centerZ) );
-    var scale = 100/max;
-    object.position.set( -centerX, -centerY+1, -centerZ );
+    var scale = 50/max;
+    object.position.set( -centerX, -centerY+1, -centerZ+35 );
     if (window.console) {
        console.log("Loading finished, scaling object by " + scale);
        console.log("Center at ( " + centerX + ", " + centerY + ", " + centerZ + " )");
@@ -332,6 +348,25 @@ function update()
 		disc.position.z += moveDistance;
 	if ( keyboard.pressed("up") )
 		disc.position.z -= moveDistance;
+	power= 50
+	wind = (0,0,0)
+	if ( keyboard.pressed("space") ){
+		if ( disc.position.y >=30) {
+			movement = disc_movement( power, wind, ychange) 
+			disc.position.x += movement[0]
+			disc.position.y += movement[1]
+			disc.position.z += movement[2]
+			
+			
+			
+			controls.update();
+			stats.update();
+			}
+	
+		}
+
+	
+
 
 	//rotate direction arrow
 	// var rotation_matrix = new THREE.Matrix4().identity();
@@ -346,6 +381,23 @@ function update()
 	controls.update();
 	stats.update();
 }
+
+
+
+function disc_movement( power, wind, ychange1) {
+	movementy = powerdisc*.01 * ychange
+	ychange = ychange - .02
+	
+	
+	
+	return [0,movementy,-powerdisc*.1]
+	
+	
+	
+	
+}	
+	
+	
 	
 function render() 
 {
