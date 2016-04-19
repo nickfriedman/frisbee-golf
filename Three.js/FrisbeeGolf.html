@@ -119,20 +119,10 @@ function init()
 	scene.add( skyBox );
 	
 
-<<<<<<< HEAD
 	var shapeMaterial = new THREE.MeshPhongMaterial( { color:0xff0000, transparent:true, opacity:1 } );
 
-=======
 	var shapeMaterial = new THREE.MeshPhongMaterial( { color:0xff0000, transparent:false, opacity:1 } );
-	// pyramid
-	pyramid = new THREE.Mesh( 
-		// radiusAtTop, radiusAtBottom, height, segmentsAroundRadius, segmentsAlongHeight,
-		new THREE.CylinderGeometry( 0, 20, 80, 3, 4 ), 
-		shapeMaterial );
-	pyramid.position.set(0, 10, 1800);
-	pyramid.rotateOnAxis( new THREE.Vector3(1,0,0), 275);
-	scene.add( pyramid );
->>>>>>> origin/master
+
 	
 	//add frisbee stuff
 	installModel(0);
@@ -147,9 +137,9 @@ function init()
 	// pyramid
 	pyramid = new THREE.Mesh( 
 		// radiusAtTop, radiusAtBottom, height, segmentsAroundRadius, segmentsAlongHeight,
-		new THREE.CylinderGeometry( 0, 10, 80, 3, 4 ), 
+		new THREE.CylinderGeometry( 0, 5, 80, 3, 4 ), 
 		shapeMaterial );
-	pyramid.position.set(0, 10, -60);
+	pyramid.position.set(0, 3, -50);
 	pyramid.rotateOnAxis( new THREE.Vector3(1,0,0), 275);
 	disc.add( pyramid );
 
@@ -377,6 +367,12 @@ function update()
 	else if ( keyboard.pressed("D") ) {
 		// pyramid.rotateOnAxis( new THREE.Vector3(0,1,0), -rotateAngle);
 		disc.rotation.y -=rotateAngle;
+	}
+	if (keyboard.pressed("W")){
+		disc.rotation.x += rotateAngle;
+	}
+	else if (keyboard.pressed("S")){
+		disc.rotation.x -= rotateAngle;
 	}
 	controls.update();
 	stats.update();
