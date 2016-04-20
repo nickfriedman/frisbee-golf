@@ -15,8 +15,8 @@
 <script src="js/THREEx.KeyboardState.js"></script>
 <script src="js/THREEx.FullScreen.js"></script>
 <script src="js/THREEx.WindowResize.js"></script>
-<!-- <script src='threex.grass.js'></script>
- -->
+<script src='js/threex.grass.js'></script>
+
 <script type='text/javascript' src='js/DAT.GUI.min.js'></script>
 
 
@@ -125,14 +125,33 @@ function init()
 	// axes
 	var axes = new THREE.AxisHelper(100);
 	scene.add( axes );
-	
+
+	//3d grass
+	var nTufts	= 5000
+	var positions	= new Array(nTufts)
+	for(var i = 0; i < nTufts; i++){
+		var gposition	= new THREE.Vector3()
+		gposition.x	= (Math.random()-0.5)*20
+		gposition.z	= (Math.random()-0.5)*20
+		positions[i]	= gposition
+	}
+	var mesh	= THREEx.createGrassTufts(positions)
+	scene.add(mesh)
+
+	// load the texture
+	var textureUrl		= THREEx.createGrassTufts.baseUrl+'images/grass01.png'
+	var material		= mesh.material
+	material.map		= THREE.ImageUtils.loadTexture(textureUrl)
+	material.alphaTest	= 0.7
+
+	//skybox
+
 	var imagePrefix = "images/nightsky_";
+	var imagePrefixDay = "images/dawnmountain-";
 	var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
 	var imageSuffix = ".png";
 	var skyGeometry = new THREE.CubeGeometry( 5000, 5000, 5000 );
 
-	
-	
 	var materialArray = [];
 	for (var i = 0; i < 6; i++)
 		materialArray.push( new THREE.MeshBasicMaterial({
@@ -143,6 +162,15 @@ function init()
 	var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
 	scene.add( skyBox );
 	
+	var materialArrayDay = [];
+	for (var i = 0; i < 6; i++)
+		materialArrayDay.push( new THREE.MeshBasicMaterial({
+			map: THREE.ImageUtils.loadTexture( imagePrefixDay + directions[i] + imageSuffix ),
+			side: THREE.BackSide
+		}));
+	var skyMaterialDay = new THREE.MeshFaceMaterial( materialArrayDay );
+	var skyBoxDay = new THREE.Mesh( skyGeometry, skyMaterialDay );
+	scene.add( skyBoxDay );
 
 	var shapeMaterial = new THREE.MeshPhongMaterial( { color:0xff0000, transparent:true, opacity:1 } );
 
@@ -194,41 +222,21 @@ function init()
 		
 		if(value) {
 			scene.remove( skyBox);
-			// daysky.setValue(true);
-			// nightsky.setValue(false);
-			imagePrefix = "images/dawnmountain-";
-
-			for (var i = 0; i < 6; i++)
-				materialArray.push( new THREE.MeshBasicMaterial({
-					map: THREE.ImageUtils.loadTexture( imagePrefix + directions[i] + imageSuffix ),
-					side: THREE.BackSide
-				}));
-			skyMaterial = new THREE.MeshFaceMaterial( materialArray );
-			skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
-			scene.add( skyBox );
+			nightsky.setValue(false);
+			scene.add( skyBoxDay)
 		}
 	});
 
 	var nightsky = gui.add( parameters, 'c').name('Night Mode').listen();
 	nightsky.onChange( function(value) {
 		if (value) {
-			scene.remove( skyBox);
-			// nightsky.setValue(true);
-			// daysky.setValue(false);
-			imagePrefix = "images/nightsky_";
-
-			for (var i = 0; i < 6; i++)
-				materialArray.push( new THREE.MeshBasicMaterial({
-					map: THREE.ImageUtils.loadTexture( imagePrefix + directions[i] + imageSuffix ),
-					side: THREE.BackSide
-				}));
-			skyMaterial = new THREE.MeshFaceMaterial( materialArray );
-			skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
-			scene.add( skyBox );
+			scene.remove( skyBoxDay);
+			daysky.setValue(false);
+			scene.add( skyBox);
 		}
 	});
 
-	var discColor = gui.addColor( parameters, 'd' ).name('Disk Color').listen();
+	var discColor = gui.addColor( parameters, 'd' ).name('Disc Color').listen();
 	discColor.onChange(function(value)
 	{disc.material.color.setHex( value.replace("#", "0x") );  });
 	
@@ -360,7 +368,7 @@ function update()
 	}
 	else if ( keyboard.pressed("3") ) 
 	{ 
-		// View from Behind disk
+		// View from Behind disc
 		camera.position.set(0,50,2000);
 	}	
 
@@ -389,17 +397,25 @@ function update()
 	if ( keyboard.pressed("space") ){
 		pyramid.material.opacity = 0;
 		pyramid.material.transparent = true;
-		if ( disc.position.y > -4) {
+		if ( disc.position.y >= -3) {
 			// movement = disc_movement( power, wind, ychange) 
 			// disc.position.x += movement[0]
 			// disc.position.y += movement[1]
 			// disc.position.z += movement[2]
-			disc_movement(powerdisc, gravity, ychange, rotateAngle);
-			
-			
-			}
-	
+			disc_movement();
 		}
+	
+	}
+	// if (disc.position.y <= -2){
+	// 	alert("Ready for next throw!");
+	// 	disc.position.y = 40;
+	// 	camera.position.y = 50;
+	// 	pyramid.material.opacity = 1;
+	// 	pyramid.material.transparent = false;	
+	// }
+	// if ( (disc.position.x == frishole.position.x) && (disc.position.z == frishole.position.z) ){
+	// 	alert("Nice throw! Move on to the next hole!");
+	// }
 
 	controls.update();
 	stats.update();
@@ -407,10 +423,10 @@ function update()
 
 
 
-function disc_movement( power, gravity1, ychange, rotateang) {
-	x = (power * directionAngle) + wind;
-	z = power*.5;
-	y = power*tiltAngle - gravity;
+function disc_movement() {
+	x = (powerdisc * directionAngle) + wind;
+	z = powerdisc*.5;
+	y = powerdisc*tiltAngle - gravity;
 	
 	gravity += .05
 
