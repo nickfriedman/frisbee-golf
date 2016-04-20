@@ -46,6 +46,12 @@ var wind = 0;
 var gameNotOver = true;
 var level1 = true;
 
+var holex=0;
+var holey=30;
+var holez=0;
+
+var InHole=0;
+
 
 init();
 animate();
@@ -76,7 +82,9 @@ function init()
 	camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
 	scene.add(camera);
 	camera.position.set(0,50,2000);
-	camera.lookAt(scene.position);	
+	//var thingy = new THREE.Vector3( 1, 0, 0 );
+
+	//camera.lookAt(thingy);	
 	// RENDERER
 	if ( Detector.webgl )
 		renderer = new THREE.WebGLRenderer( {antialias:true} );
@@ -315,7 +323,7 @@ function modelLoaded(geometry, rotation) {
     max = Math.max(max, Math.max(centerY - ymin, ymax - centerY) );
     max = Math.max(max, Math.max(centerZ - zmin, zmax - centerZ) );
     var scale = 50/max;
-    object.position.set( -centerX, -centerY+1, -centerZ+35 );
+    object.position.set( -centerX, -centerY+1, -centerZ );
     if (window.console) {
        console.log("Loading finished, scaling object by " + scale);
        console.log("Center at ( " + centerX + ", " + centerY + ", " + centerZ + " )");
@@ -397,7 +405,7 @@ function update()
 	if ( keyboard.pressed("space") ){
 		pyramid.material.opacity = 0;
 		pyramid.material.transparent = true;
-		if ( disc.position.y >= -3) {
+		if ( disc.position.y >= -3 && InHole==0) {
 			// movement = disc_movement( power, wind, ychange) 
 			// disc.position.x += movement[0]
 			// disc.position.y += movement[1]
@@ -424,26 +432,34 @@ function update()
 
 
 function disc_movement() {
-	x = (powerdisc * directionAngle) + wind;
-	z = powerdisc*.5;
-	y = powerdisc*tiltAngle - gravity;
-	
-	gravity += .05
+		x = (powerdisc * directionAngle) + wind;
+		z = powerdisc*.5;
+		y = powerdisc*tiltAngle - gravity;
+		
+		gravity += .05
 
-	disc.position.z -= z;
-	disc.position.y += y;
-	disc.position.x += x;
+		disc.position.z -= z;
+		disc.position.y += y;
+		disc.position.x += x;
+		
+		
+	//&& (holey-2 < disc.position.y <holey+2) && (holez-2 < disc.position.z <holez+2)
+		if (holez-30 < disc.position.z && disc.position.z<holez+30 && holex-30 < disc.position.x && disc.position.x<holex+30 && holey-30 < disc.position.y && disc.position.y<holey+30){
+			InHole=1;
+			console.log("hi")
+			}
 
-	camera.position.z -= z;
-	camera.position.y += y;
-	camera.position.x += x;
-	// movementy = powerdisc*.01 * ychange
-	// ychange = ychange - .02
-	
-	
-	
-	// return [0,movementy,-powerdisc*.1]
-	
+		camera.position.z -= z;
+		camera.position.y += y;
+		camera.position.x += x;
+		camera.lookAt(disc.position)
+		// movementy = powerdisc*.01 * ychange
+		// ychange = ychange - .02
+		
+		
+		
+		// return [0,movementy,-powerdisc*.1]
+		
 	
 	
 	
