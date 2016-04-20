@@ -38,15 +38,32 @@ var disc;
 var pyramid;
 
 var ychange = 1;
-var gravity = 1;
+var gravity = 2;
 var powerdisc = 50;
 var directionAngle = 0;
 var tiltAngle = 0;
-var wind = 5;
+var wind = 0;
+var gameNotOver = true;
+var level1 = true;
 
 
 init();
 animate();
+// while (gameNotOver){
+// 	while (level1){
+// 		if (disc.position == model.positions){
+// 			alert("You made it in the hole!");
+// 			break;
+// 		}
+// 		else if (disc.position.y == -3){
+// 			alert("Take another throw");
+// 			disc.position.y = 40;
+// 			//move camera
+// 		}
+// 	}
+// }
+
+
 
 // FUNCTIONS 		
 function init() 
@@ -81,7 +98,7 @@ function init()
 	container.appendChild( stats.domElement );
 	// LIGHT
 	var light = new THREE.PointLight(0xffffff);
-	light.position.set(0,250,0);
+	light.position.set(0,1250,0);
 	scene.add(light);
 	//ambient light
 	var light2 = new THREE.AmbientLight(0x333333); 
@@ -134,7 +151,7 @@ function init()
 	
 	//add frisbee stuff
 	installModel(0);
-	
+
 
 	var geometry = new THREE.CylinderGeometry( 10, 10, 1, 60 );
 	var material = new THREE.MeshLambertMaterial( {color: 0xffff00} );
@@ -154,7 +171,7 @@ function init()
 	var gui = new dat.GUI();
 	var parameters = 
 	{
-		a: 5, // numeric slider
+		a: 0, // numeric slider
 		p: 50, //numeric slider
 		b: false, //boolean (checkbox)
 		c: true, // boolean (checkbox)
@@ -319,10 +336,18 @@ function animate()
 
 function update()
 {
+
 	var rotateAngle = Math.PI / 16 * clock.getDelta();   // pi/8 radians  per second
 	var moveDistance = 200 * clock.getDelta();
 
-
+	// if (disc.position == model.position){
+	// 	alert("You made it in the hole!");
+	// }
+	if (disc.position.y == -3){
+		alert("Take another throw");
+		disc.position.y = 40;
+		//move camera
+	}
 	if ( keyboard.pressed("1") ) 
 	{ 
 		// View of Hole
@@ -359,26 +384,17 @@ function update()
 		disc.rotation.x -= rotateAngle;
 		tiltAngle -= rotateAngle;
 	}
-	//console.log(directionAngle);
 
-	if ( keyboard.pressed("left") ){
-		disc.position.x -= moveDistance;
-	}
-	if ( keyboard.pressed("right") )
-		disc.position.x += moveDistance;
-	if ( keyboard.pressed("down") )
-		disc.position.z += moveDistance;
-	if ( keyboard.pressed("up") )
-		disc.position.z -= moveDistance;
 
 	if ( keyboard.pressed("space") ){
+		pyramid.material.opacity = 0;
+		pyramid.material.transparent = true;
 		if ( disc.position.y > -4) {
 			// movement = disc_movement( power, wind, ychange) 
 			// disc.position.x += movement[0]
 			// disc.position.y += movement[1]
 			// disc.position.z += movement[2]
-			
-			disc_movement(powerdisc, directionAngle, wind, gravity, ychange, rotateAngle);
+			disc_movement(powerdisc, gravity, ychange, rotateAngle);
 			
 			
 			}
@@ -391,18 +407,20 @@ function update()
 
 
 
-function disc_movement( power, directionAngle, wind, gravity1, ychange, rotateang) {
-	x = (power * directionAngle);
+function disc_movement( power, gravity1, ychange, rotateang) {
+	x = (power * directionAngle) + wind;
 	z = power*.5;
-	
-
 	y = power*tiltAngle - gravity;
 	
 	gravity += .05
 
 	disc.position.z -= z;
-	disc.posiwtion.y += y;
+	disc.position.y += y;
 	disc.position.x += x;
+
+	camera.position.z -= z;
+	camera.position.y += y;
+	camera.position.x += x;
 	// movementy = powerdisc*.01 * ychange
 	// ychange = ychange - .02
 	
