@@ -41,6 +41,7 @@ var ychange = 1;
 var gravity = 1;
 var powerdisc = 50;
 var directionAngle = 0;
+var tiltAngle = 0;
 var wind = 5;
 
 
@@ -352,11 +353,13 @@ function update()
 	}
 	if (keyboard.pressed("W")){
 		disc.rotation.x += rotateAngle;
+		tiltAngle += rotateAngle;
 	}
 	else if (keyboard.pressed("S")){
 		disc.rotation.x -= rotateAngle;
+		tiltAngle -= rotateAngle;
 	}
-	console.log(directionAngle);
+	//console.log(directionAngle);
 
 	if ( keyboard.pressed("left") ){
 		disc.position.x -= moveDistance;
@@ -369,16 +372,15 @@ function update()
 		disc.position.z -= moveDistance;
 
 	if ( keyboard.pressed("space") ){
-		while ( disc.position.y > -4) {
+		if ( disc.position.y > -4) {
 			// movement = disc_movement( power, wind, ychange) 
 			// disc.position.x += movement[0]
 			// disc.position.y += movement[1]
 			// disc.position.z += movement[2]
 			
-			disc_movement(powerdisc, directionAngle, wind, gravity, ychange);
+			disc_movement(powerdisc, directionAngle, wind, gravity, ychange, rotateAngle);
 			
-			controls.update();
-			stats.update();
+			
 			}
 	
 		}
@@ -389,14 +391,18 @@ function update()
 
 
 
-function disc_movement( power, directionAngle, wind, gravity, ychange) {
-	y = (power * directionAngle) + wind;
-	x = power;
-	z = gravity;
+function disc_movement( power, directionAngle, wind, gravity1, ychange, rotateang) {
+	x = (power * directionAngle);
+	z = power*.5;
+	
 
-	disc.position.z -= x;
-	disc.position.y -= z;
-	disc.position.x += y;
+	y = power*tiltAngle - gravity;
+	
+	gravity += .05
+
+	disc.position.z -= z;
+	disc.posiwtion.y += y;
+	disc.position.x += x;
 	// movementy = powerdisc*.01 * ychange
 	// ychange = ychange - .02
 	
