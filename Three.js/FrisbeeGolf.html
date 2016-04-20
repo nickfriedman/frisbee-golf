@@ -38,7 +38,10 @@ var disc;
 var pyramid;
 
 var ychange = 1;
+var gravity = 1;
 var powerdisc = 50;
+var directionAngle = 0;
+var wind = 5;
 
 
 init();
@@ -158,14 +161,16 @@ function init()
 		x: 0, y: 0, z: 0
 	};
 	// gui.add( parameters )
-	gui.add( parameters, 'a' ).min(0).max(100).step(10).name('Wind');
-	// gui.add( parameters, 'c' ).name('Night Mode');
+	var winds = gui.add( parameters, 'a' ).min(0).max(50).step(5).name('Wind').listen();
+	winds.onChange( function(value) {
+		wind = value;
+	})
 
-	var power = gui.add( parameters, 'p').min(0).max(100).step(10).name('Power').listen();
+	var power = gui.add( parameters, 'p').min(0).max(70).step(5).name('Power').listen();
 	power.onChange( function(value) {
 		powerdisc = value;
-		
 	});
+
 	var daysky = gui.add( parameters, 'b').name("Day Mode").listen();
 	daysky.onChange( function(value) {
 		if(value) {
@@ -331,7 +336,26 @@ function update()
 		camera.position.set(0,50,2000);
 	}	
 
-	
+	//rotate direction arrow
+	// var rotation_matrix = new THREE.Matrix4().identity();
+	if (keyboard.pressed("A")){
+		// pyramid.rotateOnAxis( new THREE.Vector3(0,1,0), rotateAngle); 
+		disc.rotation.y +=rotateAngle;
+		directionAngle -=rotateAngle;
+	}
+	else if ( keyboard.pressed("D") ) {
+		// pyramid.rotateOnAxis( new THREE.Vector3(0,1,0), -rotateAngle);
+		disc.rotation.y -=rotateAngle;
+		directionAngle += rotateAngle;
+	}
+	if (keyboard.pressed("W")){
+		disc.rotation.x += rotateAngle;
+	}
+	else if (keyboard.pressed("S")){
+		disc.rotation.x -= rotateAngle;
+	}
+	console.log(directionAngle);
+
 	if ( keyboard.pressed("left") ){
 		disc.position.x -= moveDistance;
 	}
@@ -341,16 +365,15 @@ function update()
 		disc.position.z += moveDistance;
 	if ( keyboard.pressed("up") )
 		disc.position.z -= moveDistance;
-	power= 50
-	wind = (0,0,0)
+
 	if ( keyboard.pressed("space") ){
-		if ( disc.position.y >=30) {
-			movement = disc_movement( power, wind, ychange) 
-			disc.position.x += movement[0]
-			disc.position.y += movement[1]
-			disc.position.z += movement[2]
+		while ( disc.position.y > -4) {
+			// movement = disc_movement( power, wind, ychange) 
+			// disc.position.x += movement[0]
+			// disc.position.y += movement[1]
+			// disc.position.z += movement[2]
 			
-			
+			disc_movement(powerdisc, directionAngle, wind, gravity, ychange);
 			
 			controls.update();
 			stats.update();
@@ -358,38 +381,26 @@ function update()
 	
 		}
 
-	
-
-
-	//rotate direction arrow
-	// var rotation_matrix = new THREE.Matrix4().identity();
-	if (keyboard.pressed("A")){
-		// pyramid.rotateOnAxis( new THREE.Vector3(0,1,0), rotateAngle); 
-		disc.rotation.y +=rotateAngle;
-	}
-	else if ( keyboard.pressed("D") ) {
-		// pyramid.rotateOnAxis( new THREE.Vector3(0,1,0), -rotateAngle);
-		disc.rotation.y -=rotateAngle;
-	}
-	if (keyboard.pressed("W")){
-		disc.rotation.x += rotateAngle;
-	}
-	else if (keyboard.pressed("S")){
-		disc.rotation.x -= rotateAngle;
-	}
 	controls.update();
 	stats.update();
 }
 
 
 
-function disc_movement( power, wind, ychange1) {
-	movementy = powerdisc*.01 * ychange
-	ychange = ychange - .02
+function disc_movement( power, directionAngle, wind, gravity, ychange) {
+	y = (power * directionAngle) + wind;
+	x = power;
+	z = gravity;
+
+	disc.position.z -= x;
+	disc.position.y -= z;
+	disc.position.x += y;
+	// movementy = powerdisc*.01 * ychange
+	// ychange = ychange - .02
 	
 	
 	
-	return [0,movementy,-powerdisc*.1]
+	// return [0,movementy,-powerdisc*.1]
 	
 	
 	
