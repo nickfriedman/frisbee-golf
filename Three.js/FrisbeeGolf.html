@@ -212,7 +212,8 @@ function init()
 		b: false, //boolean (checkbox)
 		c: true, // boolean (checkbox)
 		d: "#ffff00", // color (hex)
-		x: 0, y: 0, z: 0
+		x: 0, y: 0, z: 0,
+		reset: function(){ resetDisc()}
 	};
 	// gui.add( parameters )
 	var winds = gui.add( parameters, 'a' ).min(0).max(50).step(5).name('Wind').listen();
@@ -254,6 +255,9 @@ function init()
 	folder1.add( parameters, 'z' );
 	folder1.close();
 
+	gui.add( parameters, 'reset' ).name("Reset Disc").listen();
+
+
 
 
 
@@ -261,6 +265,42 @@ function init()
 	
 }
 
+function resetDisc(){
+	console.log("in reset");
+
+	/*
+	parameters.a = 0;
+	parameters.p = 50; //numeric slider
+	parameters.b = false; //boolean (checkbox)
+	parameters.c = true; // boolean (checkbox)
+	parameters.d = "#ffff00"; // color (hex)
+	parameters.x = 0;
+	parameters.y = 0;
+	parameters.z = 0;
+	*/
+
+	ychange = 1;
+	gravity = 2;
+	powerdisc = 50;
+	directionAngle = 0;
+	tiltAngle = 0;
+	wind = 0;
+	gameNotOver = true;
+	level1 = true;
+
+	disc.position.x = 0
+	disc.position.y = 40
+	disc.position.z = 1900;
+
+
+	pyramid.position.set(0, 3, -50);
+	pyramid.material.transparent = false;
+	pyramid.material.opacity = 1;
+
+	camera.position.set(0,50,2000);
+
+
+}
 
 function installModel(modelNumber) {
     function callback(geometry,material) {  // callback function to be executed when loading finishes.
@@ -432,11 +472,23 @@ function update()
 
 
 function disc_movement() {
+<<<<<<< HEAD
 		x = (powerdisc * directionAngle) + wind;
 		z = powerdisc*.5;
 		y = powerdisc*tiltAngle - gravity;
 		
 		gravity += .05
+=======
+	x = (powerdisc * directionAngle) + wind*0.5;
+	z = powerdisc*.5;
+	y = powerdisc*tiltAngle - gravity;
+	
+	gravity += .05
+
+	disc.position.z -= z;
+	disc.position.y += y;
+	disc.position.x += x;
+>>>>>>> origin/master
 
 		disc.position.z -= z;
 		disc.position.y += y;
