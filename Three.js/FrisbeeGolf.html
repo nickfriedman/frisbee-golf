@@ -173,7 +173,9 @@ function init()
 
 	var daysky = gui.add( parameters, 'b').name("Day Mode").listen();
 	daysky.onChange( function(value) {
+		
 		if(value) {
+			scene.remove( skyBox);
 			// daysky.setValue(true);
 			// nightsky.setValue(false);
 			imagePrefix = "images/dawnmountain-";
@@ -192,6 +194,7 @@ function init()
 	var nightsky = gui.add( parameters, 'c').name('Night Mode').listen();
 	nightsky.onChange( function(value) {
 		if (value) {
+			scene.remove( skyBox);
 			// nightsky.setValue(true);
 			// daysky.setValue(false);
 			imagePrefix = "images/nightsky_";
@@ -207,7 +210,6 @@ function init()
 		}
 	});
 
-	// gui.addColor( parameters, 'd' ).name('Disk Color');
 	var discColor = gui.addColor( parameters, 'd' ).name('Disk Color').listen();
 	discColor.onChange(function(value)
 	{disc.material.color.setHex( value.replace("#", "0x") );  });
