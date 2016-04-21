@@ -45,6 +45,7 @@ var tiltAngle = 0;
 var wind = 0;
 var gameNotOver = true;
 var level1 = true;
+var skyboxlist = [];
 
 var holex=0;
 var holey=30;
@@ -156,29 +157,34 @@ function init()
 
 	var imagePrefix = "images/nightsky_";
 	var imagePrefixDay = "images/dawnmountain-";
-	var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
-	var imageSuffix = ".png";
-	var skyGeometry = new THREE.CubeGeometry( 5000, 5000, 5000 );
+	skyboxload(imagePrefix);
+	skyboxload(imagePrefixDay);
+	for (var i =0; i<skyboxlist.length; i++){
+		scene.add(skyboxlist[i]);
+	}
+	// var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
+	// var imageSuffix = ".png";
+	// var skyGeometry = new THREE.CubeGeometry( 5000, 5000, 5000 );
 
-	var materialArray = [];
-	for (var i = 0; i < 6; i++)
-		materialArray.push( new THREE.MeshBasicMaterial({
-			map: THREE.ImageUtils.loadTexture( imagePrefix + directions[i] + imageSuffix ),
-			side: THREE.BackSide
-		}));
-	var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
-	var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
-	scene.add( skyBox );
+	// var materialArray = [];
+	// for (var i = 0; i < 6; i++)
+	// 	materialArray.push( new THREE.MeshBasicMaterial({
+	// 		map: THREE.ImageUtils.loadTexture( imagePrefix + directions[i] + imageSuffix ),
+	// 		side: THREE.BackSide
+	// 	}));
+	// var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
+	// var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
+	// scene.add( skyBox );
 	
-	var materialArrayDay = [];
-	for (var i = 0; i < 6; i++)
-		materialArrayDay.push( new THREE.MeshBasicMaterial({
-			map: THREE.ImageUtils.loadTexture( imagePrefixDay + directions[i] + imageSuffix ),
-			side: THREE.BackSide
-		}));
-	var skyMaterialDay = new THREE.MeshFaceMaterial( materialArrayDay );
-	var skyBoxDay = new THREE.Mesh( skyGeometry, skyMaterialDay );
-	scene.add( skyBoxDay );
+	// var materialArrayDay = [];
+	// for (var i = 0; i < 6; i++)
+	// 	materialArrayDay.push( new THREE.MeshBasicMaterial({
+	// 		map: THREE.ImageUtils.loadTexture( imagePrefixDay + directions[i] + imageSuffix ),
+	// 		side: THREE.BackSide
+	// 	}));
+	// var skyMaterialDay = new THREE.MeshFaceMaterial( materialArrayDay );
+	// var skyBoxDay = new THREE.Mesh( skyGeometry, skyMaterialDay );
+	// scene.add( skyBoxDay );
 
 	var shapeMaterial = new THREE.MeshPhongMaterial( { color:0xff0000, transparent:true, opacity:1 } );
 
@@ -230,18 +236,22 @@ function init()
 	daysky.onChange( function(value) {
 		
 		if(value) {
-			scene.remove( skyBox);
+			// scene.remove( skyBox);
 			nightsky.setValue(false);
-			scene.add( skyBoxDay)
+			// scene.add( skyBoxDay)
+			scene.remove( skyboxlist[0]);
+			scene.add( skyboxlist[1]);
 		}
 	});
 
 	var nightsky = gui.add( parameters, 'c').name('Night Mode').listen();
 	nightsky.onChange( function(value) {
 		if (value) {
-			scene.remove( skyBoxDay);
+			// scene.remove( skyBoxDay);
 			daysky.setValue(false);
-			scene.add( skyBox);
+			// scene.add( skyBox);
+			scene.remove( skyboxlist[1]);
+			scene.add( skyboxlist[0]);
 		}
 	});
 
@@ -263,6 +273,24 @@ function init()
 
 	gui.open();
 	
+}
+
+function skyboxload(imagePrefix){
+	var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
+	var imageSuffix = ".png";
+	var skyGeometry = new THREE.CubeGeometry( 5000, 5000, 5000 );
+
+	var materialArray = [];
+	for (var i = 0; i < 6; i++)
+		materialArray.push( new THREE.MeshBasicMaterial({
+			map: THREE.ImageUtils.loadTexture( imagePrefix + directions[i] + imageSuffix ),
+			side: THREE.BackSide
+		}));
+	var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
+	var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
+	skyboxlist.push(skyBox);
+	// scene.add( skyBox );
+
 }
 
 function resetDisc(){
@@ -473,15 +501,15 @@ function update()
 
 function disc_movement() {
 
-		x = (powerdisc * directionAngle) + wind;
-		z = powerdisc*.5;
-		y = powerdisc*tiltAngle - gravity;
-		
-		gravity += .05
+	x = (powerdisc * directionAngle) + wind*0.5;
+	z = powerdisc*.5;
+	y = powerdisc*tiltAngle - gravity;
+	
+	gravity += .05
 
-		disc.position.z -= z;
-		disc.position.y += y;
-		disc.position.x += x;
+	disc.position.z -= z;
+	disc.position.y += y;
+	disc.position.x += x;
 		
 		
 	//&& (holey-2 < disc.position.y <holey+2) && (holez-2 < disc.position.z <holez+2)
