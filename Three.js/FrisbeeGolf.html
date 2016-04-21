@@ -19,6 +19,17 @@
 
 <script type='text/javascript' src='js/DAT.GUI.min.js'></script>
 
+<!-- load fonts -->
+<script src="fonts/gentilis_bold.typeface.js"></script>
+<script src="fonts/gentilis_regular.typeface.js"></script>
+<script src="fonts/optimer_bold.typeface.js"></script>
+<script src="fonts/optimer_regular.typeface.js"></script>
+<script src="fonts/helvetiker_bold.typeface.js"></script>
+<script src="fonts/helvetiker_regular.typeface.js"></script>
+<script src="fonts/droid_sans_regular.typeface.js"></script>
+<script src="fonts/droid_sans_bold.typeface.js"></script>
+<script src="fonts/droid_serif_regular.typeface.js"></script>
+<script src="fonts/droid_serif_bold.typeface.js"></script>
 
 <div id="ThreeJS" style="position: absolute; left:0px; top:0px"></div>
 <script>
@@ -199,6 +210,9 @@ function init()
 	var material = new THREE.MeshLambertMaterial( {color: 0xffff00} );
     disc = new THREE.Mesh( geometry, material );
 	disc.position.set(0,40,1900);
+	var discLight = new THREE.AmbientLight(0x333333); 
+	discLight.position.set( disc.position );
+	disc.add(discLight);	
 	scene.add( disc );
 
 	// pyramid
@@ -209,6 +223,30 @@ function init()
 	pyramid.position.set(0, 3, -50);
 	pyramid.rotateOnAxis( new THREE.Vector3(1,0,0), 275);
 	disc.add( pyramid );
+
+	// add 3D text
+	var materialFront = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+	var materialSide = new THREE.MeshBasicMaterial( { color: 0x000088 } );
+	var materialArray = [ materialFront, materialSide ];
+	var textGeom = new THREE.TextGeometry( "Score: 0   Par: 3", 
+	{
+		size: 60, height: 4, curveSegments: 3,
+		font: "helvetiker", weight: "bold", style: "normal",
+		bevelThickness: 1, bevelSize: 2, bevelEnabled: true,
+		material: 0, extrudeMaterial: 1
+	});
+	// font: helvetiker, gentilis, droid sans, droid serif, optimer
+	// weight: normal, bold
+	
+	var textMaterial = new THREE.MeshFaceMaterial(materialArray);
+	var textMesh = new THREE.Mesh(textGeom, textMaterial );
+	
+	textGeom.computeBoundingBox();
+	var textWidth = textGeom.boundingBox.max.x - textGeom.boundingBox.min.x;
+	
+	textMesh.position.set( -0.5 * textWidth, 500, 100 );
+	textMesh.rotation.x = Math.PI / 4;
+	scene.add(textMesh);
 
 	var gui = new dat.GUI();
 	var parameters = 
@@ -241,6 +279,7 @@ function init()
 			// scene.add( skyBoxDay)
 			scene.remove( skyboxlist[0]);
 			scene.add( skyboxlist[1]);
+			disc.remove(discLight);
 		}
 	});
 
@@ -252,6 +291,7 @@ function init()
 			// scene.add( skyBox);
 			scene.remove( skyboxlist[1]);
 			scene.add( skyboxlist[0]);
+			disc.add(discLight);
 		}
 	});
 
@@ -515,7 +555,8 @@ function disc_movement() {
 	//&& (holey-2 < disc.position.y <holey+2) && (holez-2 < disc.position.z <holez+2)
 		if (holez-30 < disc.position.z && disc.position.z<holez+30 && holex-30 < disc.position.x && disc.position.x<holex+30 && holey-30 < disc.position.y && disc.position.y<holey+30){
 			InHole=1;
-			console.log("hi")
+			console.log("hi");
+			alert("Made it!");
 			}
 
 		camera.position.z -= z;
