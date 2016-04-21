@@ -134,7 +134,7 @@ function init()
 	// axes
 	var axes = new THREE.AxisHelper(100);
 	scene.add( axes );
-
+/*
 	//3d grass
 	var nTufts	= 5000
 	var positions	= new Array(nTufts)
@@ -152,7 +152,7 @@ function init()
 	var material		= mesh.material
 	material.map		= THREE.ImageUtils.loadTexture(textureUrl)
 	material.alphaTest	= 0.7
-
+*/
 	//skybox
 
 	var imagePrefix = "images/nightsky_";
@@ -315,6 +315,7 @@ function resetDisc(){
 	wind = 0;
 	gameNotOver = true;
 	level1 = true;
+	InHole = 0;
 
 	disc.position.x = 0
 	disc.position.y = 40
@@ -510,7 +511,6 @@ function disc_movement() {
 	disc.position.z -= z;
 	disc.position.y += y;
 	disc.position.x += x;
-		
 		
 	//&& (holey-2 < disc.position.y <holey+2) && (holez-2 < disc.position.z <holez+2)
 		if (holez-30 < disc.position.z && disc.position.z<holez+30 && holex-30 < disc.position.x && disc.position.x<holex+30 && holey-30 < disc.position.y && disc.position.y<holey+30){
