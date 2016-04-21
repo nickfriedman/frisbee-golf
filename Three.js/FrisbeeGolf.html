@@ -472,23 +472,12 @@ function update()
 
 
 function disc_movement() {
-<<<<<<< HEAD
+
 		x = (powerdisc * directionAngle) + wind;
 		z = powerdisc*.5;
 		y = powerdisc*tiltAngle - gravity;
 		
 		gravity += .05
-=======
-	x = (powerdisc * directionAngle) + wind*0.5;
-	z = powerdisc*.5;
-	y = powerdisc*tiltAngle - gravity;
-	
-	gravity += .05
-
-	disc.position.z -= z;
-	disc.position.y += y;
-	disc.position.x += x;
->>>>>>> origin/master
 
 		disc.position.z -= z;
 		disc.position.y += y;
