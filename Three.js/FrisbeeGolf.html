@@ -555,6 +555,46 @@ function disc_movement() {
 	disc.position.z -= z;
 	disc.position.y += y;
 	disc.position.x += x;
+
+	//TRYING TO ADD PARTICLE SYSTEM
+	var particleCount = 10,
+	    particles = new THREE.Geometry(),
+		pMaterial = new THREE.ParticleBasicMaterial({
+			color: 0xFFFFFF,
+			size: 20,
+			map: THREE.ImageUtils.loadTexture(
+				"images/particle.png"
+			),
+			blending: THREE.AdditiveBlending,
+			transparent: true
+		});
+	
+	// now create the individual particles
+	for(var p = 0; p < particleCount; p++) {
+	
+		// create a particle with random
+		// position values
+		var pX = Math.random() * 10 - 5 ,
+			pY = Math.random() * 10 - 5,
+			pZ = Math.random() * 10 - 5,
+		    particle = new THREE.Vertex(
+				new THREE.Vector3(disc.position.x + pX, disc.position.y + pY, disc.position.z + pZ)
+			);
+
+		// add it to the geometry
+		particles.vertices.push(particle);
+	}
+	
+	// create the particle system
+	var particleSystem = new THREE.ParticleSystem(
+		particles,
+		pMaterial);
+	
+	particleSystem.sortParticles = true;
+	
+	// add it to the scene
+	scene.add(particleSystem);
+	//
 		
 	//&& (holey-2 < disc.position.y <holey+2) && (holez-2 < disc.position.z <holez+2)
 	if (holez-30 < disc.position.z && disc.position.z<holez+30 && holex-30 < disc.position.x && disc.position.x<holex+30 && holey-30 < disc.position.y && disc.position.y<holey+30){
