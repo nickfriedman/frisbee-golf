@@ -49,8 +49,7 @@ var disc;
 var pyramid;
 var Score = 0;
 
-var ychange = 1;
-var gravity = 2;
+var gravity = 3;
 var powerdisc = 25;
 var directionAngle = 0;
 var tiltAngle = 0;
@@ -261,9 +260,7 @@ function init()
 	daysky.onChange( function(value) {
 		
 		if(value) {
-			// scene.remove( skyBox);
 			nightsky.setValue(false);
-			// scene.add( skyBoxDay)
 			scene.remove( skyboxlist[0]);
 			scene.add( skyboxlist[1]);
 			disc.remove(discLight);
@@ -273,9 +270,7 @@ function init()
 	var nightsky = gui.add( parameters, 'c').name('Night Mode').listen();
 	nightsky.onChange( function(value) {
 		if (value) {
-			// scene.remove( skyBoxDay);
 			daysky.setValue(false);
-			// scene.add( skyBox);
 			scene.remove( skyboxlist[1]);
 			scene.add( skyboxlist[0]);
 			disc.add(discLight);
@@ -290,9 +285,6 @@ function init()
 	gui.add( parameters, 'next').name("Take Next Throw").listen();
 
 	gui.add( parameters, 'reset' ).name("Reset Disc").listen();
-
-
-
 
 	gui.open();
 	
@@ -318,32 +310,25 @@ function skyboxload(imagePrefix){
 function resetDisc(){
 	console.log("in reset");
 
-	/*
-	parameters.a = 0;
-	parameters.p = 50; //numeric slider
-	parameters.b = false; //boolean (checkbox)
-	parameters.c = true; // boolean (checkbox)
-	parameters.d = "#ffff00"; // color (hex)
-	parameters.x = 0;
-	parameters.y = 0;
-	parameters.z = 0;
-	*/
+	// parameters.a = 0;
+	// wind = 0;
+	// parameters.p = 25; //numeric slider
+	// powerdisc = 25;
 
-	ychange = 1;
-	gravity = 2;
-	//powerdisc = 50;
+	gravity = 3;
 	directionAngle = 0;
 	tiltAngle = 0;
-	//wind = 0;
 	gameNotOver = true;
 	level1 = true;
 	InHole = 0;
 
 	disc.position.set(0, 40, 1900);
 	camera.position.set(0,50,2000);
+	camera.lookAt(model.position);
 	pyramid.material.transparent = false;
 	pyramid.material.opacity = 1;
 	disc.rotation.y = 0;
+	disc.rotation.x = 0;
 
 }
 
@@ -378,7 +363,8 @@ function nextThrow(){
 	camera.lookAt(model.position);
 	pyramid.material.transparent = false;
 	pyramid.material.opacity = 1;
-	disc.rotation.y = -m;
+	// disc.rotation.y = -m;
+	disc.lookAt(camera.position);
 	//pyramid.rotateOnAxis( new THREE.Vector3(1,0,0), 275);
 
 
@@ -492,17 +478,20 @@ function update()
 	if ( keyboard.pressed("1") ) 
 	{ 
 		// View of Hole
-		camera.position.set(0,20,500);
+		camera.position.set(0,20,250);
+		camera.lookAt(model.position);
 	}
 	else if ( keyboard.pressed("2") ) 
 	{ 
 		// View from Above
 		camera.position.set(0,5000,0);
+		camera.lookAt(scene.position);
 	}
 	else if ( keyboard.pressed("3") ) 
 	{ 
 		// View from Behind disc
 		camera.position.set(0,50,2000);
+		camera.lookAt(scene.position);
 	}	
 
 	//rotate direction arrow
@@ -561,7 +550,7 @@ function disc_movement() {
 	z = powerdisc;
 	y = powerdisc*tiltAngle - gravity;
 	
-	gravity += .05
+	// gravity += .05
 
 	if (Math.abs(directionAngle) > 1.5 && Math.abs(directionAngle) < 4.5)
 		disc.position.z += z;
