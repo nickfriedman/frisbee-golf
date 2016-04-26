@@ -65,6 +65,10 @@ var holez=0;
 
 var InHole=0;
 
+var modellist = ["frishole.json", "treeking.json", "treeking.json", "treeking.json", "treeking.json", "treeking.json", "treeking.json", "treeking.json", "treeking.json"]
+var modelcolor = ["grey", "green"]
+var tree_offsets = [ [0,0], [20,10], [-13,-10],[-8,46],[-47,13],[9,22],[30,-60],[6,-60],[5,70]]
+
 
 init();
 animate();
@@ -180,6 +184,14 @@ function init()
 	
 	//add frisbee stuff
 	installModel(0);
+	installModel(1);
+	installModel(2);
+	installModel(3);
+	installModel(4);
+	installModel(5);
+	installModel(6);
+	installModel(7);
+	installModel(8);
 
 	var geometry = new THREE.CylinderGeometry( 10, 10, 1, 60 );
 	var material = new THREE.MeshLambertMaterial( {color: 0xffff00} );
@@ -376,7 +388,7 @@ function resetDisc(){
 
 function installModel(modelNumber) {
     function callback(geometry,material) {  // callback function to be executed when loading finishes.
-        modelLoaded(geometry, [0,0,0]);
+        modelLoaded(geometry, [0,0,0], modelNumber);
         //document.getElementById("status").innerHTML = "";
         
     }
@@ -386,7 +398,7 @@ function installModel(modelNumber) {
     //document.getElementById("status").innerHTML = "Loading<br>" + "frisbee.json";
     var loader = new THREE.JSONLoader();
     try {
-        loader.load(modelDirectory + "frishole.json", callback);
+        loader.load(modelDirectory + modellist[modelNumber], callback);
     }
     catch (e) {
         // Note: Will give an error if loading from the local file system
@@ -396,12 +408,20 @@ function installModel(modelNumber) {
     }
 }
 
-function modelLoaded(geometry, rotation) {
+function modelLoaded(geometry, rotation, modelNumber) {
 
     /* create the object from the geometry was loaded, with a white material. */
-       
-    var object = new THREE.Mesh(geometry,
+	console.log(modelNumber);
+	console.log("poop")
+    
+	if (modelNumber == 0) {
+		var object = new THREE.Mesh(geometry,
                         new THREE.MeshLambertMaterial( {color:"white"} ));
+						}
+	else {
+		var object = new THREE.Mesh(geometry,
+                        new THREE.MeshLambertMaterial( {color:"green"} ));
+		}
 
     /* Determine the ranges of x, y, and z in the vertices of the geometry. */
 
@@ -435,7 +455,11 @@ function modelLoaded(geometry, rotation) {
     max = Math.max(max, Math.max(centerY - ymin, ymax - centerY) );
     max = Math.max(max, Math.max(centerZ - zmin, zmax - centerZ) );
     var scale = 50/max;
-    object.position.set( -centerX, -centerY+1, -centerZ );
+	object.position.set( -centerX, -centerY+1, -centerZ );
+	if (modelNumber !=0 ) {
+		offset = tree_offsets[modelNumber]
+		object.position.set(-centerX+offset[0], -centerY+2, -centerZ+offset[1] );
+		}
     if (window.console) {
        console.log("Loading finished, scaling object by " + scale);
        console.log("Center at ( " + centerX + ", " + centerY + ", " + centerZ + " )");
