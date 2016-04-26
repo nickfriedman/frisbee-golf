@@ -94,9 +94,7 @@ function init()
 	camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
 	scene.add(camera);
 	camera.position.set(0,50,2000);
-	//var thingy = new THREE.Vector3( 1, 0, 0 );
-
-	//camera.lookAt(thingy);	
+	camera.lookAt(scene.position);	
 	// RENDERER
 	if ( Detector.webgl )
 		renderer = new THREE.WebGLRenderer( {antialias:true} );
@@ -173,29 +171,6 @@ function init()
 	for (var i =0; i<skyboxlist.length; i++){
 		scene.add(skyboxlist[i]);
 	}
-	// var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
-	// var imageSuffix = ".png";
-	// var skyGeometry = new THREE.CubeGeometry( 5000, 5000, 5000 );
-
-	// var materialArray = [];
-	// for (var i = 0; i < 6; i++)
-	// 	materialArray.push( new THREE.MeshBasicMaterial({
-	// 		map: THREE.ImageUtils.loadTexture( imagePrefix + directions[i] + imageSuffix ),
-	// 		side: THREE.BackSide
-	// 	}));
-	// var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
-	// var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
-	// scene.add( skyBox );
-	
-	// var materialArrayDay = [];
-	// for (var i = 0; i < 6; i++)
-	// 	materialArrayDay.push( new THREE.MeshBasicMaterial({
-	// 		map: THREE.ImageUtils.loadTexture( imagePrefixDay + directions[i] + imageSuffix ),
-	// 		side: THREE.BackSide
-	// 	}));
-	// var skyMaterialDay = new THREE.MeshFaceMaterial( materialArrayDay );
-	// var skyBoxDay = new THREE.Mesh( skyGeometry, skyMaterialDay );
-	// scene.add( skyBoxDay );
 
 	var shapeMaterial = new THREE.MeshPhongMaterial( { color:0xff0000, transparent:true, opacity:1 } );
 
@@ -356,18 +331,35 @@ function resetDisc(){
 	level1 = true;
 	InHole = 0;
 
-	disc.position.x = 0
-	disc.position.y = 40
-	disc.position.z = 1900;
-	disc.rotation.x = 0;
-	disc.rotation.y = 0;
+	// disc.position.x = 0
+	// disc.position.y = 40
+	// disc.position.z = 1900;
+	// disc.rotation.x = 0;
+	// disc.rotation.y = 0;
 
-	pyramid.position.set(0, 3, -50);
+	disc.position.y = 40;
+	camera.position.y = 50;
+	if (disc.position.x > 0)
+		camera.position.x = disc.position.x + 100;
+	else if (disc.position.x < 0)
+		camera.position.x = disc.position.x - 100;
+	else
+		camera.position.x =0;
+	if (disc.position.z > 0)
+		camera.position.z = disc.position.z + 100;
+	else (disc.position.z < 0)
+		camera.position.z = disc.position.z - 100;
+	console.log(disc.position.x);
+	console.log(camera.position.x);
+	console.log(disc.position.z);
+	console.log(camera.position.z);
+	camera.lookAt(model.position);
+	// pyramid.position.set(0, 3, -50);
 	pyramid.material.transparent = false;
 	pyramid.material.opacity = 1;
 	//pyramid.rotateOnAxis( new THREE.Vector3(1,0,0), 275);
 
-	camera.position.set(0,50,2000);
+	// camera.position.set(0,50,2000);
 
 
 
@@ -604,13 +596,6 @@ function disc_movement() {
 	camera.position.y += y;
 	camera.position.x += x;
 	camera.lookAt(disc.position)
-	// movementy = powerdisc*.01 * ychange
-	// ychange = ychange - .02
-	
-	
-	
-	// return [0,movementy,-powerdisc*.1]
-	
 
 	
 	
