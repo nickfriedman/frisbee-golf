@@ -47,6 +47,7 @@ var model = null;
 var modelDirectory = "models/";
 var disc;
 var pyramid;
+var Score = 0;
 
 var ychange = 1;
 var gravity = 2;
@@ -179,7 +180,6 @@ function init()
 	
 	//add frisbee stuff
 	installModel(0);
-
 
 	var geometry = new THREE.CylinderGeometry( 10, 10, 1, 60 );
 	var material = new THREE.MeshLambertMaterial( {color: 0xffff00} );
@@ -321,6 +321,8 @@ function resetDisc(){
 	parameters.y = 0;
 	parameters.z = 0;
 	*/
+	Score ++;
+
 	ychange = 1;
 	gravity = 2;
 	//powerdisc = 50;
@@ -336,19 +338,22 @@ function resetDisc(){
 	// disc.position.z = 1900;
 	// disc.rotation.x = 0;
 	// disc.rotation.y = 0;
+	m = (model.position.x -disc.position.x) / (model.position.z - disc.position.z)
+	camera.position.x = m * (camera.position.z + 100 - disc.position.z) + disc.position.x;
+	camera.position.z = 100 + disc.position.z;
 
 	disc.position.y = 40;
 	camera.position.y = 50;
-	if (disc.position.x > 0)
-		camera.position.x = disc.position.x + 100;
-	else if (disc.position.x < 0)
-		camera.position.x = disc.position.x - 100;
-	else
-		camera.position.x =0;
-	if (disc.position.z > 0)
-		camera.position.z = disc.position.z + 100;
-	else (disc.position.z < 0)
-		camera.position.z = disc.position.z - 100;
+	// if (disc.position.x > 0)
+	// 	camera.position.x = disc.position.x + 100;
+	// else if (disc.position.x < 0)
+	// 	camera.position.x = disc.position.x - 100;
+	// else
+	// 	camera.position.x =0;
+	// if (disc.position.z > 0)
+	// 	camera.position.z = disc.position.z + 100;
+	// else (disc.position.z < 0)
+	// 	camera.position.z = disc.position.z - 100;
 	console.log(disc.position.x);
 	console.log(camera.position.x);
 	console.log(disc.position.z);
@@ -470,7 +475,7 @@ function update()
 	if ( keyboard.pressed("1") ) 
 	{ 
 		// View of Hole
-		camera.position.set(0,20,1000);
+		camera.position.set(0,20,500);
 	}
 	else if ( keyboard.pressed("2") ) 
 	{ 
