@@ -365,6 +365,7 @@ function nextThrow(){
 	pyramid.material.opacity = 1;
 	// disc.rotation.y = -m;
 	disc.lookAt(camera.position);
+	directionAngle = 0;
 	//pyramid.rotateOnAxis( new THREE.Vector3(1,0,0), 275);
 
 
@@ -522,7 +523,8 @@ function update()
 		disc.rotation.x -= rotateAngle;
 		tiltAngle -= rotateAngle;
 	}
-// console.log(disc.rotation.y);
+console.log("disc:"); console.log(disc.rotation.y);
+console.log("arrow:"); console.log(directionAngle);
 
 
 	if ( keyboard.pressed("space") ){
@@ -552,9 +554,9 @@ function disc_movement() {
 	
 	// gravity += .05
 
-	if (Math.abs(directionAngle) > 1.5 && Math.abs(directionAngle) < 4.5)
+	if (Math.abs(directionAngle) > 0.3 && Math.abs(directionAngle) < .45)
 		disc.position.z += z;
-	if (Math.abs(directionAngle) < 1.5 || Math.abs(directionAngle) > 4.5)
+	if (Math.abs(directionAngle) < 0.3 || Math.abs(directionAngle) > .45)
 		disc.position.z -=z;
 	disc.position.y += y;
 	disc.position.x += x;
