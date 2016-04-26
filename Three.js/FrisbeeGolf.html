@@ -333,10 +333,7 @@ function resetDisc(){
 	level1 = true;
 	InHole = 0;
 
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/master
 	disc.position.y = 40;
 	camera.position.y = 50;
 	if (disc.position.x > 0)
@@ -349,41 +346,23 @@ function resetDisc(){
 		camera.position.z = disc.position.z + (disc.position.z /1900)*200;
 	else (disc.position.z < 0)
 		camera.position.z = disc.position.z + (disc.position.z /1900)*200;
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/master
-	// disc.position.x = 0
-	// disc.position.y = 40
-	// disc.position.z = 1900;
-	// disc.rotation.x = 0;
-	// disc.rotation.y = 0;
+
 	// m = (model.position.z -disc.position.z) / (model.position.x - disc.position.x)
 	// if (disc.position.x > 0)
 	// 	camera.position.x = m * (disc.position.z - disc.position.z) + disc.position.x;
 	// else if (disc.position.x < 0)
 	// 	camera.position.x = m * (disc.position.z - disc.position.z) + disc.position.x;
-	// else
-<<<<<<< HEAD
-	// 	camera.position.x =0;
-	// if (disc.position.z > 0)
-	// 	camera.position.z = disc.position.z + 100;
-	// else (disc.position.z < 0)
-	// 	camera.position.z = disc.position.z - 100;
-=======
-	// 	camera.position.x = 0;
-	// camera.position.z = m * (camera.position.x - disc.position.x) + disc.position.z;
+
 
 	disc.position.y = 40;
 	camera.position.y = 50;
->>>>>>> origin/master
 
 	console.log(disc.position.x);
 	console.log(camera.position.x);
 	console.log(disc.position.z);
 	console.log(camera.position.z);
 	camera.lookAt(model.position);
-	// pyramid.position.set(0, 3, -50);
 	pyramid.material.transparent = false;
 	pyramid.material.opacity = 1;
 	//pyramid.rotateOnAxis( new THREE.Vector3(1,0,0), 275);
