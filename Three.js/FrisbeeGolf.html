@@ -117,11 +117,11 @@ function init()
 	stats.domElement.style.zIndex = 100;
 	container.appendChild( stats.domElement );
 	// LIGHT
-	var light = new THREE.PointLight(0xffffff);
+	var light = new THREE.PointLight(0xffffff, 1, 0 , 2);
 	light.position.set(0,1250,0);
 	scene.add(light);
 	//ambient light
-	var light2 = new THREE.AmbientLight(0x333333); 
+	var light2 = new THREE.AmbientLight(0x333333, 1, 0 , 2); 
 	light2.position.set( light.position );
 	scene.add(light2);
 	// FLOOR
@@ -553,24 +553,23 @@ function disc_movement() {
 	disc.position.x += x;
 		
 	//&& (holey-2 < disc.position.y <holey+2) && (holez-2 < disc.position.z <holez+2)
-		if (holez-30 < disc.position.z && disc.position.z<holez+30 && holex-30 < disc.position.x && disc.position.x<holex+30 && holey-30 < disc.position.y && disc.position.y<holey+30){
-			InHole=1;
-			console.log("hi");
-			alert("Made it!");
-			}
+	if (holez-30 < disc.position.z && disc.position.z<holez+30 && holex-30 < disc.position.x && disc.position.x<holex+30 && holey-30 < disc.position.y && disc.position.y<holey+30){
+		InHole=1;
+		alert("Made it!");
+		}
 
-		camera.position.z -= z;
-		camera.position.y += y;
-		camera.position.x += x;
-		camera.lookAt(disc.position)
-		// movementy = powerdisc*.01 * ychange
-		// ychange = ychange - .02
-		
-		
-		
-		// return [0,movementy,-powerdisc*.1]
-		
+	camera.position.z -= z;
+	camera.position.y += y;
+	camera.position.x += x;
+	camera.lookAt(disc.position)
+	// movementy = powerdisc*.01 * ychange
+	// ychange = ychange - .02
 	
+	
+	
+	// return [0,movementy,-powerdisc*.1]
+	
+
 	
 	
 }	
