@@ -51,7 +51,7 @@ var Score = 0;
 
 var ychange = 1;
 var gravity = 2;
-var powerdisc = 50;
+var powerdisc = 25;
 var directionAngle = 0;
 var tiltAngle = 0;
 var wind = 0;
@@ -239,11 +239,11 @@ function init()
 	var parameters = 
 	{
 		a: 0, // numeric slider
-		p: 50, //numeric slider
+		p: 25, //numeric slider
 		b: false, //boolean (checkbox)
 		c: true, // boolean (checkbox)
 		d: "#ffff00", // color (hex)
-		x: 0, y: 0, z: 0,
+		next: function(){ nextThrow()},
 		reset: function(){ resetDisc()}
 	};
 	// gui.add( parameters )
@@ -252,7 +252,7 @@ function init()
 		wind = value;
 	})
 
-	var power = gui.add( parameters, 'p').min(0).max(70).step(5).name('Power').listen();
+	var power = gui.add( parameters, 'p').min(0).max(50).step(1).name('Power').listen();
 	power.onChange( function(value) {
 		powerdisc = value;
 	});
@@ -286,14 +286,10 @@ function init()
 	discColor.onChange(function(value)
 	{disc.material.color.setHex( value.replace("#", "0x") );  });
 	
-	var folder1 = gui.addFolder('Coordinates');
-	folder1.add( parameters, 'x' );
-	folder1.add( parameters, 'y' );
-	folder1.add( parameters, 'z' );
-	folder1.close();
+
+	gui.add( parameters, 'next').name("Take Next Throw").listen();
 
 	gui.add( parameters, 'reset' ).name("Reset Disc").listen();
-
 
 
 
@@ -319,7 +315,6 @@ function skyboxload(imagePrefix){
 	// scene.add( skyBox );
 
 }
-
 function resetDisc(){
 	console.log("in reset");
 
@@ -333,7 +328,6 @@ function resetDisc(){
 	parameters.y = 0;
 	parameters.z = 0;
 	*/
-	Score ++;
 
 	ychange = 1;
 	gravity = 2;
@@ -345,6 +339,17 @@ function resetDisc(){
 	level1 = true;
 	InHole = 0;
 
+	disc.position.set(0, 40, 1900);
+	camera.position.set(0,50,2000);
+	pyramid.material.transparent = false;
+	pyramid.material.opacity = 1;
+	disc.rotation.y = 0;
+
+}
+
+function nextThrow(){
+
+	Score ++;
 
 	disc.position.y = 40;
 	camera.position.y = 50;
@@ -360,7 +365,7 @@ function resetDisc(){
 		camera.position.z = disc.position.z + (disc.position.z /1900)*200;
 
 
-	// m = (model.position.z -disc.position.z) / (model.position.x - disc.position.x)
+	m = (model.position.z -disc.position.z) / (model.position.x - disc.position.x)
 	// if (disc.position.x > 0)
 	// 	camera.position.x = m * (disc.position.z - disc.position.z) + disc.position.x;
 	// else if (disc.position.x < 0)
@@ -370,16 +375,11 @@ function resetDisc(){
 	disc.position.y = 40;
 	camera.position.y = 50;
 
-	console.log(disc.position.x);
-	console.log(camera.position.x);
-	console.log(disc.position.z);
-	console.log(camera.position.z);
 	camera.lookAt(model.position);
 	pyramid.material.transparent = false;
 	pyramid.material.opacity = 1;
+	disc.rotation.y = -m;
 	//pyramid.rotateOnAxis( new THREE.Vector3(1,0,0), 275);
-
-	// camera.position.set(0,50,2000);
 
 
 
@@ -489,16 +489,6 @@ function animate()
 function update()
 {
 
-	var rotateAngle = Math.PI / 16 * clock.getDelta();   // pi/8 radians  per second
-
-	// if (disc.position == model.position){
-	// 	alert("You made it in the hole!");
-	// }
-	if (disc.position.y == -3){
-		alert("Take another throw");
-		disc.position.y = 40;
-		//move camera
-	}
 	if ( keyboard.pressed("1") ) 
 	{ 
 		// View of Hole
@@ -516,7 +506,15 @@ function update()
 	}	
 
 	//rotate direction arrow
+
+	var rotateAngle = Math.PI / 16 * clock.getDelta();   // pi/16 radians  per second
+
 	// var rotation_matrix = new THREE.Matrix4().identity();
+	if (directionAngle > 6.28)
+		directionAngle = 0;
+	if (directionAngle < -6.28)
+		directionAngle = 0;
+
 	if (keyboard.pressed("A")){
 		// pyramid.rotateOnAxis( new THREE.Vector3(0,1,0), rotateAngle); 
 		disc.rotation.y +=rotateAngle;
@@ -535,29 +533,20 @@ function update()
 		disc.rotation.x -= rotateAngle;
 		tiltAngle -= rotateAngle;
 	}
+// console.log(disc.rotation.y);
 
 
 	if ( keyboard.pressed("space") ){
 		pyramid.material.opacity = 0;
 		pyramid.material.transparent = true;
 		if ( disc.position.y >= -3 && InHole==0) {
-			// movement = disc_movement( power, wind, ychange) 
-			// disc.position.x += movement[0]
-			// disc.position.y += movement[1]
-			// disc.position.z += movement[2]
 			disc_movement();
 		}
 	
 	}
 	// if (disc.position.y <= -2){
-	// 	alert("Ready for next throw!");
-	// 	disc.position.y = 40;
-	// 	camera.position.y = 50;
-	// 	pyramid.material.opacity = 1;
-	// 	pyramid.material.transparent = false;	
-	// }
-	// if ( (disc.position.x == frishole.position.x) && (disc.position.z == frishole.position.z) ){
-	// 	alert("Nice throw! Move on to the next hole!");
+	// 	nextThrow();
+	// 	// alert("Ready for next throw!");
 	// }
 
 	controls.update();
@@ -569,12 +558,15 @@ function update()
 function disc_movement() {
 
 	x = (powerdisc * directionAngle) + wind*0.5;
-	z = powerdisc*.5;
+	z = powerdisc;
 	y = powerdisc*tiltAngle - gravity;
 	
 	gravity += .05
 
-	disc.position.z -= z;
+	if (Math.abs(directionAngle) > 1.5 && Math.abs(directionAngle) < 4.5)
+		disc.position.z += z;
+	if (Math.abs(directionAngle) < 1.5 || Math.abs(directionAngle) > 4.5)
+		disc.position.z -=z;
 	disc.position.y += y;
 	disc.position.x += x;
 
