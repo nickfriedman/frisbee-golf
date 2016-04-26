@@ -360,13 +360,18 @@ function resetDisc(){
 	disc.position.x = 0
 	disc.position.y = 40
 	disc.position.z = 1900;
-
+	disc.rotation.x = 0;
+	disc.rotation.y = 0;
 
 	pyramid.position.set(0, 3, -50);
 	pyramid.material.transparent = false;
 	pyramid.material.opacity = 1;
+	pyramid.rotation.x = 0;
+	pyramid.rotation.y = 0;	
 
 	camera.position.set(0,50,2000);
+
+
 
 
 }
@@ -463,7 +468,6 @@ function update()
 {
 
 	var rotateAngle = Math.PI / 16 * clock.getDelta();   // pi/8 radians  per second
-	var moveDistance = 200 * clock.getDelta();
 
 	// if (disc.position == model.position){
 	// 	alert("You made it in the hole!");
@@ -558,7 +562,7 @@ function disc_movement() {
 		alert("Made it!");
 		}
 
-	camera.position.z -= z;
+	camera.position.z -= 0.75 * z;
 	camera.position.y += y;
 	camera.position.x += x;
 	camera.lookAt(disc.position)
