@@ -48,6 +48,7 @@ var modelDirectory = "models/";
 var disc;
 var pyramid;
 var Score = 0;
+var Par =3;
 
 var gravity = 3;
 var powerdisc = 25;
@@ -118,11 +119,11 @@ function init()
 
 	//ambient light
 	var light2 = new THREE.AmbientLight(0x333333, 1, 0 , 2); 
-	light2.position.set( light.position );
+	light2.position.set( 1000,1000,1000 );
 	scene.add(light2);
 
 	// FLOOR
-	THREE.ImageUtils.crossOrigin = '';
+	/*THREE.ImageUtils.crossOrigin = '';
 	var floorTexture = THREE.ImageUtils.loadTexture('images/grass-512.jpg');
 	// var floorTexture = new THREE.ImageUtils.loadTexture( 'images/grass.jpg' );
 	floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
@@ -132,7 +133,17 @@ function init()
 	var floor = new THREE.Mesh(floorGeometry, floorMaterial);
 	floor.position.y = -5;
 	floor.rotation.x = Math.PI / 2;
-	scene.add(floor);
+	floor.receiveShadow=true;
+	scene.add(floor); */
+
+	var floorTex = THREE.ImageUtils.loadTexture("images/grass-512.jpg");
+	floorTex.wrapS = floorTex.wrapT = THREE.RepeatWrapping;
+	floorTex.repeat.set( 16, 16);
+    var plane = new THREE.Mesh(new THREE.CubeGeometry(5000, 5000, 0.1, 30), new THREE.MeshPhongMaterial({color: 0x666666, map: floorTex, shininess: 30, specular: 0x000111 }));
+    plane.position.y = -5;
+    plane.rotation.x = Math.PI/2;
+    plane.receiveShadow = true;
+    scene.add(plane);
 
 
 	////////////
@@ -142,19 +153,21 @@ function init()
 	//Shadows
 	renderer.shadowMapEnabled = true;
 
-	var directLight = new THREE.DirectionalLight( 0x444cc, 2);
-	directLight.target.position.set(1, -1, 1);
+	var spotlight = new THREE.SpotLight( 0xffffff, 2);
 
-	directLight.castShadow = true;
-	directLight.shadowDarkness = 0.5;
-	directLight.shadowCameraVisible = false;
+	spotlight.target.position.set(0,0,0);
+	spotlight.position.set(2000,2000,1000)
+	spotlight.angle = 1;
 
-	directLight.shadowCameraRight     =  5;
-	directLight.shadowCameraLeft     = -5;
-	directLight.shadowCameraTop      =  5;
-	directLight.shadowCameraBottom   = -5;
-	scene.add( directLight);
+	spotlight.castShadow = true;
+	spotlight.shadowDarkness = 0.75;
+	spotlight.shadowCameraVisible = true;
 
+	spotlight.shadowCameraRight     =  50;
+	spotlight.shadowCameraLeft     = 50;
+	spotlight.shadowCameraTop      =  50;
+	spotlight.shadowCameraBottom   = 100;
+	scene.add( spotlight);
 
 	// axes
 	var axes = new THREE.AxisHelper(100);
@@ -169,15 +182,22 @@ function init()
 		gposition.z	= (Math.random()-0.5)*2000
 		positions[i]	= gposition
 	}
-	var mesh	= THREEx.createGrassTufts(positions)
-	scene.add(mesh)
+	var mesh	= THREEx.createGrassTufts(positions);
+	scene.add(mesh);
 
 	// load the texture
+<<<<<<< HEAD
 	var textureUrl		= THREEx.createGrassTufts.baseUrl+'/Three.js/images/grass01.png'
 	var material		= mesh.material
 	material.map		= THREE.ImageUtils.loadTexture(textureUrl)
 	material.alphaTest	= 0.7
 */
+=======
+	var textureUrl		= THREEx.createGrassTufts.baseUrl+'images/grass01.png';
+	var material		= mesh.material;
+	material.map		= THREE.ImageUtils.loadTexture(textureUrl);
+	material.alphaTest	= 0.7;
+>>>>>>> origin/master
 	//skybox
 
 	var imagePrefix = "images/nightsky_";
@@ -207,7 +227,7 @@ function init()
 	var material = new THREE.MeshLambertMaterial( {color: 0xffff00} );
     disc = new THREE.Mesh( geometry, material );
 	disc.position.set(0,40,1900);
-	var discLight = new THREE.AmbientLight(0x333333); 
+	var discLight = new THREE.PointLight(0xffffff); 
 	discLight.position.set( disc.position );
 	disc.add(discLight);	
 	scene.add( disc );
@@ -228,7 +248,7 @@ function init()
 	var materialFront = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
 	var materialSide = new THREE.MeshBasicMaterial( { color: 0x000088 } );
 	var materialArray = [ materialFront, materialSide ];
-	var textGeom = new THREE.TextGeometry( "Score: " + Score + "   Par: 3", 
+	var textGeom = new THREE.TextGeometry( "Score: " + Score + "   Par: "+Par, 
 	{
 		size: 10, height: 4, curveSegments: 3,
 		font: "helvetiker", weight: "bold", style: "normal",
@@ -412,7 +432,7 @@ function nextThrow(){
 	var materialFront = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
 	var materialSide = new THREE.MeshBasicMaterial( { color: 0x000088 } );
 	var materialArray = [ materialFront, materialSide ];
-	var textGeom = new THREE.TextGeometry( "Score: " + Score + "   Par: 3", 
+	var textGeom = new THREE.TextGeometry( "Score: " + Score + "   Par: "+Par, 
 	{
 		size: 10, height: 4, curveSegments: 3,
 		font: "helvetiker", weight: "bold", style: "normal",
@@ -665,10 +685,11 @@ function change_hole(new_hole) {
 	console.log("changing hole")
 	Hole_Num = new_hole
 	InHole=0
-	
+	Score = 0;
+	Par =4;
 	
 	resetDisc(Hole_Num);
-	}
+}
 
 
 
@@ -694,7 +715,7 @@ function disc_movement() {
 	z = powerdisc * (z_modifier * ((Pie/2) - direction_z)/(Pie/2));
 	y = powerdisc*tiltAngle - gravity;
 	console.log(directionAngle)
-	 gravity += .05
+	gravity += .03;
 
 	disc.position.z -= z;
 	disc.position.y += y;
