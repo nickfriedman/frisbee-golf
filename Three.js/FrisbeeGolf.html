@@ -367,11 +367,12 @@ function nextThrow(){
 	pyramid.material.opacity = 1;
 	// disc.rotation.y = -m;
 	disc.lookAt(camera.position);
+	
 	angleDeg -= 90
 	if (angleDeg <= -180) {
 		angleDeg = angleDeg+360;
 		}
-	directionAngle = ((angleDeg)/180)*-3.15
+	directionAngle = ((angleDeg)/180)*3.14
 	console.log(directionAngle)
 	console.log(disc.position.x)
 	console.log(disc.position.z)
@@ -508,6 +509,9 @@ function update()
 	//rotate direction arrow
 
 	var rotateAngle = Math.PI / 16 * clock.getDelta();   // pi/16 radians  per second
+	var positionAngle = rotateAngle;
+	if (disc.position.z <= 0) 
+		positionAngle = -1*positionAngle;
 
 	// var rotation_matrix = new THREE.Matrix4().identity();
 	if (directionAngle > 6.28)
@@ -517,20 +521,20 @@ function update()
 
 	if (keyboard.pressed("A")){
 		// pyramid.rotateOnAxis( new THREE.Vector3(0,1,0), rotateAngle); 
-		disc.rotation.y +=rotateAngle;
+		disc.rotation.y +=positionAngle;
 		directionAngle -=rotateAngle;
 	}
 	else if ( keyboard.pressed("D") ) {
 		// pyramid.rotateOnAxis( new THREE.Vector3(0,1,0), -rotateAngle);
-		disc.rotation.y -=rotateAngle;
+		disc.rotation.y -=positionAngle;
 		directionAngle += rotateAngle;
 	}
 	if (keyboard.pressed("W")){
-		disc.rotation.x += rotateAngle;
+		disc.rotation.x += positionAngle;
 		tiltAngle += rotateAngle;
 	}
 	else if (keyboard.pressed("S")){
-		disc.rotation.x -= rotateAngle;
+		disc.rotation.x -= positionAngle;
 		tiltAngle -= rotateAngle;
 	}
 //console.log("disc:"); console.log(disc.rotation.y);
@@ -538,8 +542,8 @@ function update()
 
 
 	if ( keyboard.pressed("space") ){
-		pyramid.material.opacity = 0;
-		pyramid.material.transparent = true;
+		//pyramid.material.opacity = 0;
+		//pyramid.material.transparent = true;
 		if ( disc.position.y >= -3 && InHole==0) {
 			disc_movement();
 		}
@@ -558,32 +562,33 @@ function update()
 
 function disc_movement() {
 
-
+	Pie = Math.PI
 	direction_x = directionAngle
 	direction_z = Math.abs(directionAngle)
 	z_modifier = 1
-	if (direction_x>1.575) 
-		direction_x = 3.15- directionAngle;
-	if (direction_x< -1.575) 
-		direction_x = -3.15 - directionAngle;
-	if (direction_z>1.575) {
-		direction_z = 3.15- direction_z;
+	if (direction_x>Pie/2) 
+		direction_x = Pie- directionAngle;
+	if (direction_x< -Pie/2) 
+		direction_x = -Pie - directionAngle;
+	if (direction_z>Pie/2) {
+		direction_z = Pie- direction_z;
 		z_modifier = -1
 		}
 	
 	
 	
-	x = (powerdisc *(direction_x /1.575)) + wind*0.5;
-	z = powerdisc * (z_modifier * (1.575 - direction_z)/1.575);
+	x = (powerdisc *(direction_x /(Pie/2))) + wind*0.5;
+	z = powerdisc * (z_modifier * ((Pie/2) - direction_z)/(Pie/2));
 	y = powerdisc*tiltAngle - gravity;
-	//console.log(directionAngle)
+	console.log(directionAngle)
 	 gravity += .02
 
 	disc.position.z -= z;
 	disc.position.y += y;
 	disc.position.x += x;
-	//console.log(x)
-	//console.log("^^^ x")
+	console.log(x)
+	console.log("^^^ x")
+	console.log(disc.position.x)
 	//console.log(z)
 
 	//TRYING TO ADD PARTICLE SYSTEM
@@ -607,9 +612,7 @@ function disc_movement() {
 		var pX = Math.random() * 10 - 5 ,
 			pY = Math.random() * 10 - 5,
 			pZ = Math.random() * 10 - 5,
-		    particle = new THREE.Vertex(
-				new THREE.Vector3(disc.position.x + pX, disc.position.y + pY, disc.position.z + pZ)
-			);
+		    particle = new THREE.Vector3(disc.position.x + pX, disc.position.y + pY, disc.position.z + pZ);
 
 		// add it to the geometry
 		particles.vertices.push(particle);
