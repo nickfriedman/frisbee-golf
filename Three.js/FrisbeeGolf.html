@@ -57,6 +57,7 @@ var wind = 0;
 var gameNotOver = true;
 var level1 = true;
 var skyboxlist = [];
+var textMesh;
 
 //var holex=0;
 var holey=30;
@@ -76,19 +77,6 @@ var tree_offsets = [ [0,0], [20,10], [-13,-10],[-8,46],[-47,13],[9,22],[30,-60],
 
 init();
 animate();
-// while (gameNotOver){
-// 	while (level1){
-// 		if (disc.position == model.positions){
-// 			alert("You made it in the hole!");
-// 			break;
-// 		}
-// 		else if (disc.position.y == -3){
-// 			alert("Take another throw");
-// 			disc.position.y = 40;
-// 			//move camera
-// 		}
-// 	}
-// }
 
 
 
@@ -149,18 +137,35 @@ function init()
 	////////////
 	// CUSTOM //
 	////////////
-	
+
+	//Shadows
+	renderer.shadowMapEnabled = true;
+
+	var directLight = new THREE.DirectionalLight( 0x444cc, 2);
+	directLight.target.position.set(1, -1, 1);
+
+	directLight.castShadow = true;
+	directLight.shadowDarkness = 0.5;
+	directLight.shadowCameraVisible = false;
+
+	directLight.shadowCameraRight     =  5;
+	directLight.shadowCameraLeft     = -5;
+	directLight.shadowCameraTop      =  5;
+	directLight.shadowCameraBottom   = -5;
+	scene.add( directLight);
+
+
 	// axes
 	var axes = new THREE.AxisHelper(100);
 	scene.add( axes );
-/*
+
 	//3d grass
 	var nTufts	= 5000
 	var positions	= new Array(nTufts)
 	for(var i = 0; i < nTufts; i++){
 		var gposition	= new THREE.Vector3()
-		gposition.x	= (Math.random()-0.5)*20
-		gposition.z	= (Math.random()-0.5)*20
+		gposition.x	= (Math.random()-0.5)*2000
+		gposition.z	= (Math.random()-0.5)*2000
 		positions[i]	= gposition
 	}
 	var mesh	= THREEx.createGrassTufts(positions)
@@ -171,7 +176,7 @@ function init()
 	var material		= mesh.material
 	material.map		= THREE.ImageUtils.loadTexture(textureUrl)
 	material.alphaTest	= 0.7
-*/
+
 	//skybox
 
 	var imagePrefix = "images/nightsky_";
@@ -198,6 +203,9 @@ function init()
 	installModel(7);
 	installModel(8);
 
+	// model.castShadow = true;
+	// model.recieveShadow = false;
+
 	var geometry = new THREE.CylinderGeometry( 10, 10, 1, 60 );
 	var material = new THREE.MeshLambertMaterial( {color: 0xffff00} );
     disc = new THREE.Mesh( geometry, material );
@@ -206,6 +214,9 @@ function init()
 	discLight.position.set( disc.position );
 	disc.add(discLight);	
 	scene.add( disc );
+
+	disc.castShadow = true;
+	disc.recieveShadow = false;
 
 	// pyramid
 	pyramid = new THREE.Mesh( 
@@ -220,9 +231,9 @@ function init()
 	var materialFront = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
 	var materialSide = new THREE.MeshBasicMaterial( { color: 0x000088 } );
 	var materialArray = [ materialFront, materialSide ];
-	var textGeom = new THREE.TextGeometry( "Score: 0   Par: 3", 
+	var textGeom = new THREE.TextGeometry( "Score: " + Score + "   Par: 3", 
 	{
-		size: 60, height: 4, curveSegments: 3,
+		size: 10, height: 4, curveSegments: 3,
 		font: "helvetiker", weight: "bold", style: "normal",
 		bevelThickness: 1, bevelSize: 2, bevelEnabled: true,
 		material: 0, extrudeMaterial: 1
@@ -231,31 +242,57 @@ function init()
 	// weight: normal, bold
 	
 	var textMaterial = new THREE.MeshFaceMaterial(materialArray);
-	var textMesh = new THREE.Mesh(textGeom, textMaterial );
+	textMesh = new THREE.Mesh(textGeom, textMaterial );
 	
 	textGeom.computeBoundingBox();
 	var textWidth = textGeom.boundingBox.max.x - textGeom.boundingBox.min.x;
-	
-	textMesh.position.set( -0.5 * textWidth, 500, 100 );
-	textMesh.rotation.x = Math.PI / 4;
+
+	textMesh.position.set( -0.5 * textWidth, 0, 1800 );
+	textMesh.rotation.x = Math.PI / 8;
 	scene.add(textMesh);
 
 	var gui = new dat.GUI();
 	var parameters = 
 	{
+		m: false,
 		a: 0, // numeric slider
 		p: 25, //numeric slider
 		b: false, //boolean (checkbox)
 		c: true, // boolean (checkbox)
 		d: "#ffff00", // color (hex)
 		next: function(){ nextThrow()},
-		reset: function(){ resetDisc(Hole_Num)}
+		reset: function(){ resetDisc(Hole_Num)},
+		h: function(){ change_hole(Hole_Num)}
 	};
-	// gui.add( parameters )
+
+	var minimap = gui.add(parameters, 'm').name("Mini Map").listen();
+	minimap.onChange( function (value) {
+		if(value == true){
+			// View from Above
+			camera.position.set(0,5000,0);
+			camera.lookAt(scene.position);
+		}
+		else{
+			camera.position.y = 50;
+			if (disc.position.x > 0)
+				camera.position.x = disc.position.x + (disc.position.x /1900)*200;
+			else if (disc.position.x < 0)
+				camera.position.x = disc.position.x + (disc.position.x /1900)*200;
+			else
+				camera.position.x =0;
+			if (disc.position.z > 0)
+				camera.position.z = disc.position.z + (disc.position.z /1900)*200;
+			else (disc.position.z < 0)
+				camera.position.z = disc.position.z + (disc.position.z /1900)*200;
+
+			camera.lookAt(model.position);			
+		}
+	});
+
 	var winds = gui.add( parameters, 'a' ).min(0).max(50).step(5).name('Wind').listen();
 	winds.onChange( function(value) {
 		wind = value;
-	})
+	});
 
 	var power = gui.add( parameters, 'p').min(0).max(50).step(1).name('Power').listen();
 	power.onChange( function(value) {
@@ -289,6 +326,8 @@ function init()
 	
 
 	gui.add( parameters, 'next').name("Take Next Throw").listen();
+
+	gui.add( parameters, 'h').name("Move to Next Hole").listen();
 
 	gui.add( parameters, 'reset' ).name("Reset Disc").listen();
 
@@ -371,6 +410,30 @@ function resetDisc(numhole){
 function nextThrow(){
 
 	Score ++;
+	scene.remove(textMesh);
+	// add 3D text
+	var materialFront = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+	var materialSide = new THREE.MeshBasicMaterial( { color: 0x000088 } );
+	var materialArray = [ materialFront, materialSide ];
+	var textGeom = new THREE.TextGeometry( "Score: " + Score + "   Par: 3", 
+	{
+		size: 10, height: 4, curveSegments: 3,
+		font: "helvetiker", weight: "bold", style: "normal",
+		bevelThickness: 1, bevelSize: 2, bevelEnabled: true,
+		material: 0, extrudeMaterial: 1
+	});
+	// font: helvetiker, gentilis, droid sans, droid serif, optimer
+	// weight: normal, bold
+	
+	var textMaterial = new THREE.MeshFaceMaterial(materialArray);
+	textMesh = new THREE.Mesh(textGeom, textMaterial );
+	
+	textGeom.computeBoundingBox();
+	var textWidth = textGeom.boundingBox.max.x - textGeom.boundingBox.min.x;
+
+	textMesh.position.set( -0.5 * textWidth + disc.position.x, 0, disc.position.z-100 );
+	textMesh.rotation.x = Math.PI / 8;
+	scene.add(textMesh);
 
 	disc.position.y = 40;
 	camera.position.y = 50;
@@ -389,14 +452,6 @@ function nextThrow(){
 	
 	
 	//m = (model.position.z -disc.position.z) / (model.position.x - disc.position.x)
-	// if (disc.position.x > 0)
-	// 	camera.position.x = m * (disc.position.z - disc.position.z) + disc.position.x;
-	// else if (disc.position.x < 0)
-	// 	camera.position.x = m * (disc.position.z - disc.position.z) + disc.position.x;
-
-
-	//disc.position.y = 40;
-	//camera.position.y = 50;
 
 	camera.lookAt(model.position);
 	pyramid.material.transparent = false;
@@ -415,10 +470,9 @@ function nextThrow(){
 	//directionAngle = 0;
 	//pyramid.rotateOnAxis( new THREE.Vector3(1,0,0), 275);
 
-
-
-
 }
+
+
 
 function installModel(modelNumber) {
     function callback(geometry,material) {  // callback function to be executed when loading finishes.
@@ -578,8 +632,8 @@ function update()
 
 
 	if ( keyboard.pressed("space") ){
-		//pyramid.material.opacity = 0;
-		//pyramid.material.transparent = true;
+		pyramid.material.opacity = 0;
+		pyramid.material.transparent = true;
 		if ( disc.position.y >= -3 && InHole==0) {
 			disc_movement();
 		}
@@ -609,7 +663,7 @@ function change_hole(new_hole) {
 	InHole=0
 	
 	
-	resetDisc(2);
+	resetDisc(Hole_Num);
 	}
 
 
