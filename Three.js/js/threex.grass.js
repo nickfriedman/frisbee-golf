@@ -44,7 +44,7 @@ THREEx.createGrassTufts	= function(positions){
 
 
 	// load the texture
-	var textureUrl	= THREEx.createGrassTufts.baseUrl+'images/grass01.png'
+	var textureUrl	= THREEx.createGrassTufts.baseUrl+'/Three.js/images/grass01.png'
 	var texture	= THREE.ImageUtils.loadTexture(textureUrl)
 	// build the material
 	var material	= new THREE.MeshPhongMaterial({

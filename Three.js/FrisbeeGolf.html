@@ -48,6 +48,7 @@ var modelDirectory = "models/";
 var disc;
 var pyramid;
 var Score = 0;
+var Par =3;
 
 var gravity = 3;
 var powerdisc = 25;
@@ -243,7 +244,7 @@ function init()
 	var materialFront = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
 	var materialSide = new THREE.MeshBasicMaterial( { color: 0x000088 } );
 	var materialArray = [ materialFront, materialSide ];
-	var textGeom = new THREE.TextGeometry( "Score: " + Score + "   Par: 3", 
+	var textGeom = new THREE.TextGeometry( "Score: " + Score + "   Par: "+Par, 
 	{
 		size: 10, height: 4, curveSegments: 3,
 		font: "helvetiker", weight: "bold", style: "normal",
@@ -427,7 +428,7 @@ function nextThrow(){
 	var materialFront = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
 	var materialSide = new THREE.MeshBasicMaterial( { color: 0x000088 } );
 	var materialArray = [ materialFront, materialSide ];
-	var textGeom = new THREE.TextGeometry( "Score: " + Score + "   Par: 3", 
+	var textGeom = new THREE.TextGeometry( "Score: " + Score + "   Par: "+Par, 
 	{
 		size: 10, height: 4, curveSegments: 3,
 		font: "helvetiker", weight: "bold", style: "normal",
@@ -673,10 +674,11 @@ function change_hole(new_hole) {
 	console.log("changing hole")
 	Hole_Num = new_hole
 	InHole=0
-	
+	Score = 0;
+	Par =4;
 	
 	resetDisc(Hole_Num);
-	}
+}
 
 
 
@@ -702,7 +704,7 @@ function disc_movement() {
 	z = powerdisc * (z_modifier * ((Pie/2) - direction_z)/(Pie/2));
 	y = powerdisc*tiltAngle - gravity;
 	console.log(directionAngle)
-	 gravity += .03;
+	gravity += .03;
 
 	disc.position.z -= z;
 	disc.position.y += y;
