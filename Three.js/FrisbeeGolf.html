@@ -348,24 +348,34 @@ function nextThrow(){
 		camera.position.z = disc.position.z + (disc.position.z /1900)*200;
 	else (disc.position.z < 0)
 		camera.position.z = disc.position.z + (disc.position.z /1900)*200;
-
-
-	m = (model.position.z -disc.position.z) / (model.position.x - disc.position.x)
+		
+	var angleDeg = Math.atan2(disc.position.z, disc.position.x ) * 180 / Math.PI;
+	
+	
+	//m = (model.position.z -disc.position.z) / (model.position.x - disc.position.x)
 	// if (disc.position.x > 0)
 	// 	camera.position.x = m * (disc.position.z - disc.position.z) + disc.position.x;
 	// else if (disc.position.x < 0)
 	// 	camera.position.x = m * (disc.position.z - disc.position.z) + disc.position.x;
 
 
-	disc.position.y = 40;
-	camera.position.y = 50;
+	//disc.position.y = 40;
+	//camera.position.y = 50;
 
 	camera.lookAt(model.position);
 	pyramid.material.transparent = false;
 	pyramid.material.opacity = 1;
 	// disc.rotation.y = -m;
 	disc.lookAt(camera.position);
-	directionAngle = 0;
+	angleDeg -= 90
+	if (angleDeg <= -180) {
+		angleDeg = angleDeg+360;
+		}
+	directionAngle = ((angleDeg)/180)*-3.15
+	console.log(directionAngle)
+	console.log(disc.position.x)
+	console.log(disc.position.z)
+	//directionAngle = 0;
 	//pyramid.rotateOnAxis( new THREE.Vector3(1,0,0), 275);
 
 
@@ -398,8 +408,8 @@ function installModel(modelNumber) {
 function modelLoaded(geometry, rotation, modelNumber) {
 
     /* create the object from the geometry was loaded, with a white material. */
-	console.log(modelNumber);
-	console.log("poop")
+	
+	
     
 	if (modelNumber == 0) {
 		var object = new THREE.Mesh(geometry,
@@ -448,8 +458,8 @@ function modelLoaded(geometry, rotation, modelNumber) {
 		object.position.set(-centerX+offset[0], -centerY+2, -centerZ+offset[1] );
 		}
     if (window.console) {
-       console.log("Loading finished, scaling object by " + scale);
-       console.log("Center at ( " + centerX + ", " + centerY + ", " + centerZ + " )");
+       //console.log("Loading finished, scaling object wby " + scale);
+       //console.log("Center at ( " + centerX + ", " + centerY + ", " + centerZ + " )");
     }
     
     /* Create the wrapper, model, to scale and rotate the object. */
@@ -523,8 +533,8 @@ function update()
 		disc.rotation.x -= rotateAngle;
 		tiltAngle -= rotateAngle;
 	}
-console.log("disc:"); console.log(disc.rotation.y);
-console.log("arrow:"); console.log(directionAngle);
+//console.log("disc:"); console.log(disc.rotation.y);
+//console.log("arrow:"); console.log(directionAngle);
 
 
 	if ( keyboard.pressed("space") ){
@@ -548,18 +558,33 @@ console.log("arrow:"); console.log(directionAngle);
 
 function disc_movement() {
 
-	x = (powerdisc * directionAngle) + wind*0.5;
-	z = powerdisc;
-	y = powerdisc*tiltAngle - gravity;
-	
-	// gravity += .05
 
-	if (Math.abs(directionAngle) > 0.3 && Math.abs(directionAngle) < .45)
-		disc.position.z += z;
-	if (Math.abs(directionAngle) < 0.3 || Math.abs(directionAngle) > .45)
-		disc.position.z -=z;
+	direction_x = directionAngle
+	direction_z = Math.abs(directionAngle)
+	z_modifier = 1
+	if (direction_x>1.575) 
+		direction_x = 3.15- directionAngle;
+	if (direction_x< -1.575) 
+		direction_x = -3.15 - directionAngle;
+	if (direction_z>1.575) {
+		direction_z = 3.15- direction_z;
+		z_modifier = -1
+		}
+	
+	
+	
+	x = (powerdisc *(direction_x /1.575)) + wind*0.5;
+	z = powerdisc * (z_modifier * (1.575 - direction_z)/1.575);
+	y = powerdisc*tiltAngle - gravity;
+	//console.log(directionAngle)
+	 gravity += .02
+
+	disc.position.z -= z;
 	disc.position.y += y;
 	disc.position.x += x;
+	//console.log(x)
+	//console.log("^^^ x")
+	//console.log(z)
 
 	//TRYING TO ADD PARTICLE SYSTEM
 	var particleCount = 10,
