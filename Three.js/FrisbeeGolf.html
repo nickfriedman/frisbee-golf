@@ -172,6 +172,7 @@ function init()
 	// axes
 	var axes = new THREE.AxisHelper(100);
 	scene.add( axes );
+
 /*
 	//3d grass
 	var nTufts	= 5000
@@ -186,18 +187,15 @@ function init()
 	scene.add(mesh);
 
 	// load the texture
-<<<<<<< HEAD
 	var textureUrl		= THREEx.createGrassTufts.baseUrl+'/Three.js/images/grass01.png'
 	var material		= mesh.material
 	material.map		= THREE.ImageUtils.loadTexture(textureUrl)
 	material.alphaTest	= 0.7
-*/
-=======
 	var textureUrl		= THREEx.createGrassTufts.baseUrl+'images/grass01.png';
 	var material		= mesh.material;
 	material.map		= THREE.ImageUtils.loadTexture(textureUrl);
 	material.alphaTest	= 0.7;
->>>>>>> origin/master
+*/
 	//skybox
 
 	var imagePrefix = "images/nightsky_";
@@ -208,10 +206,8 @@ function init()
 		scene.add(skyboxlist[i]);
 	}
 
+
 	var shapeMaterial = new THREE.MeshPhongMaterial( { color:0xff0000, transparent:true, opacity:1 } );
-
-	var shapeMaterial = new THREE.MeshPhongMaterial( { color:0xff0000, transparent:false, opacity:1 } );
-
 	
 	//add frisbee stuff
 	
@@ -227,9 +223,10 @@ function init()
 	var material = new THREE.MeshLambertMaterial( {color: 0xffff00} );
     disc = new THREE.Mesh( geometry, material );
 	disc.position.set(0,40,1900);
-	var discLight = new THREE.PointLight(0xffffff); 
+	var discLight = new THREE.PointLight(0xff0000); 
 	discLight.position.set( disc.position );
 	disc.add(discLight);	
+	scene.add(discLight);
 	scene.add( disc );
 
 	disc.castShadow = true;
@@ -238,7 +235,7 @@ function init()
 	// pyramid
 	pyramid = new THREE.Mesh( 
 		// radiusAtTop, radiusAtBottom, height, segmentsAroundRadius, segmentsAlongHeight,
-		new THREE.CylinderGeometry( 0, 5, 80, 3, 4 ), 
+		new THREE.CylinderGeometry( 0, 2, 80, 3, 4 ), 
 		shapeMaterial );
 	pyramid.position.set(0, 3, -50);
 	pyramid.rotateOnAxis( new THREE.Vector3(1,0,0), 275);
@@ -583,6 +580,7 @@ function modelLoaded(geometry, rotation, modelNumber) {
     model.add(object);
     model.scale.set(scale,scale,scale);
     model.rotation.set(rotation[0],rotation[1],rotation[2]);
+    model.castShadow = true;
 	
     scene.add(model);
     render();
