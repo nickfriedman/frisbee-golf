@@ -172,7 +172,7 @@ function init()
 	scene.add(mesh)
 
 	// load the texture
-	var textureUrl		= THREEx.createGrassTufts.baseUrl+'images/grass01.png'
+	var textureUrl		= THREEx.createGrassTufts.baseUrl+'/Three.js/images/grass01.png'
 	var material		= mesh.material
 	material.map		= THREE.ImageUtils.loadTexture(textureUrl)
 	material.alphaTest	= 0.7
