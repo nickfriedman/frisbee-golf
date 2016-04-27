@@ -70,9 +70,10 @@ var start_loc= [[-1,-1,-1], [0, 40, 1900], [1900,40,1000]]
 var InHole=0;
 var Hole_Num = 1
 
-var modellist = ["frishole.json", "treeking.json", "treeking.json", "treeking.json", "treeking.json", "treeking.json", "treeking.json", "treeking.json", "treeking.json"]
+var modellist = ["frishole.json", "besttree.json", "besttree.json", "besttree.json", "besttree.json", "besttree.json", "besttree.json", "besttree.json", "besttree.json",
+"treeking.json","treeking.json","treeking.json","treeking.json","treeking.json","treeking.json","treeking.json","treeking.json","treeking.json"]
 var modelcolor = ["grey", "green"]
-var tree_offsets = [ [0,0], [20,10], [-13,-10],[-8,46],[-47,13],[9,22],[30,-60],[6,-60],[5,70]]
+var tree_offsets = [ [0,0], [20,10], [-13,-10],[-8,46],[-47,13],[9,22],[30,-60],[6,-60],[5,70], [25,25], [-20,35],[40,-34],[-55,-20], [15,-34], [-31,5], [23,61], [-14,-32], [-17,52],]
 
 
 init();
@@ -158,7 +159,7 @@ function init()
 	// axes
 	var axes = new THREE.AxisHelper(100);
 	scene.add( axes );
-
+/*
 	//3d grass
 	var nTufts	= 5000
 	var positions	= new Array(nTufts)
@@ -176,7 +177,7 @@ function init()
 	var material		= mesh.material
 	material.map		= THREE.ImageUtils.loadTexture(textureUrl)
 	material.alphaTest	= 0.7
-
+*/
 	//skybox
 
 	var imagePrefix = "images/nightsky_";
@@ -193,15 +194,11 @@ function init()
 
 	
 	//add frisbee stuff
-	installModel(0);
-	installModel(1);
-	installModel(2);
-	installModel(3);
-	installModel(4);
-	installModel(5);
-	installModel(6);
-	installModel(7);
-	installModel(8);
+	
+	for (i=0; i<17; i++) {
+		installModel(i)
+		}
+	
 
 	// model.castShadow = true;
 	// model.recieveShadow = false;
@@ -543,8 +540,15 @@ function modelLoaded(geometry, rotation, modelNumber) {
     max = Math.max(max, Math.max(centerY - ymin, ymax - centerY) );
     max = Math.max(max, Math.max(centerZ - zmin, zmax - centerZ) );
     var scale = 50/max;
+	if (modelNumber !=0 && modelNumber<9) {
+		scale = 150/max
+		}
 	object.position.set( -centerX, -centerY+1, -centerZ );
-	if (modelNumber !=0 ) {
+	if (modelNumber !=0 && modelNumber<9) {
+		offset = tree_offsets[modelNumber]
+		object.position.set(-centerX+offset[0], -centerY+5, -centerZ+offset[1] );
+		}
+	if (modelNumber !=0 && modelNumber>8) {
 		offset = tree_offsets[modelNumber]
 		object.position.set(-centerX+offset[0], -centerY+2, -centerZ+offset[1] );
 		}
