@@ -709,11 +709,13 @@ function disc_movement() {
 	
 	
 	
-	x = (powerdisc *(direction_x /(Pie/2))) + wind*0.5;
+	x = (powerdisc *(direction_x /(Pie/2)))
 	z = powerdisc * (z_modifier * ((Pie/2) - direction_z)/(Pie/2));
 	y = powerdisc*tiltAngle - gravity;
 	console.log(directionAngle)
 	gravity += .03;
+	
+	directionAngle = directionAngle + wind/5000
 
 	disc.position.z -= z;
 	disc.position.y += y;
