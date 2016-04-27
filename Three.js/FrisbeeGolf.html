@@ -118,7 +118,7 @@ function init()
 
 	//ambient light
 	var light2 = new THREE.AmbientLight(0x333333, 1, 0 , 2); 
-	light2.position.set( light.position );
+	light2.position.set( 1000,1000,1000 );
 	scene.add(light2);
 
 	// FLOOR
@@ -138,7 +138,7 @@ function init()
 	var floorTex = THREE.ImageUtils.loadTexture("images/grass-512.jpg");
 	floorTex.wrapS = floorTex.wrapT = THREE.RepeatWrapping;
 	floorTex.repeat.set( 16, 16);
-    var plane = new THREE.Mesh(new THREE.CubeGeometry(5000, 5000, 0.1, 30), new THREE.MeshPhongMaterial({color: 0x3c3c3c, map: floorTex}));
+    var plane = new THREE.Mesh(new THREE.CubeGeometry(5000, 5000, 0.1, 30), new THREE.MeshPhongMaterial({color: 0x666666, map: floorTex, shininess: 30, specular: 0x000111 }));
     plane.position.y = -5;
     plane.rotation.x = Math.PI/2;
     plane.receiveShadow = true;
@@ -152,10 +152,10 @@ function init()
 	//Shadows
 	renderer.shadowMapEnabled = true;
 
-	var spotlight = new THREE.SpotLight( 0xffffff, 6);
+	var spotlight = new THREE.SpotLight( 0xffffff, 2);
 
 	spotlight.target.position.set(0,0,0);
-	spotlight.position.set(10,1000,100)
+	spotlight.position.set(2000,2000,1000)
 	spotlight.angle = 1;
 
 	spotlight.castShadow = true;
@@ -181,15 +181,14 @@ function init()
 		gposition.z	= (Math.random()-0.5)*2000
 		positions[i]	= gposition
 	}
-	var mesh	= THREEx.createGrassTufts(positions)
-	scene.add(mesh)
+	var mesh	= THREEx.createGrassTufts(positions);
+	scene.add(mesh);
 
 	// load the texture
-	var textureUrl		= THREEx.createGrassTufts.baseUrl+'images/grass01.png'
-	var material		= mesh.material
-	material.map		= THREE.ImageUtils.loadTexture(textureUrl)
-	material.alphaTest	= 0.7
-
+	var textureUrl		= THREEx.createGrassTufts.baseUrl+'images/grass01.png';
+	var material		= mesh.material;
+	material.map		= THREE.ImageUtils.loadTexture(textureUrl);
+	material.alphaTest	= 0.7;
 	//skybox
 
 	var imagePrefix = "images/nightsky_";
