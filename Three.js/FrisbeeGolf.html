@@ -147,8 +147,8 @@ function init()
 	scene.add( light );
 
 	//ambient light
-	var light2 = new THREE.AmbientLight(0x333333, 1, 0 , 2); 
-	light2.position.set( 1000,1000,1000 );
+	var light2 = new THREE.AmbientLight(0x444444, 1); 
+	light2.position.set( 0,0,0 );
 	scene.add(light2);
 
 	// FLOOR 
@@ -170,20 +170,21 @@ function init()
 	//Shadows
 	renderer.shadowMapEnabled = true;
 
-	var spotlight = new THREE.SpotLight( 0xffffff, 2);
+	var spotlight = new THREE.SpotLight( 0xffffff,2);
 
-	spotlight.position.set(2000,2000,1000)
-	spotlight.angle = 1;
+	spotlight.position.set(0,1000,2200)
+	spotlight.angle = .75;
 
 	spotlight.castShadow = true;
 	spotlight.shadowDarkness = 0.75;
 	spotlight.shadowCameraVisible = false;
 
-	spotlight.shadowCameraRight     =  50;
-	spotlight.shadowCameraLeft     = 50;
-	spotlight.shadowCameraTop      =  50;
-	spotlight.shadowCameraBottom   = 100;
+	spotlight.shadowCameraRight     =  5;
+	spotlight.shadowCameraLeft     = 5;
+	spotlight.shadowCameraTop      =  5;
+	spotlight.shadowCameraBottom   = 10;
 	scene.add( spotlight);
+	
 
 	// axes
 	var axes = new THREE.AxisHelper(100);
@@ -267,7 +268,7 @@ function init()
 	}   );
 	this.discGlow = new THREE.Mesh( geometry.clone(), customMaterial.clone() );
 	discGlow.position = disc.position;
-	discGlow.scale.multiplyScalar(1.2);
+	discGlow.scale.multiplyScalar(1.5);
 
 	// add 3D text
 	var materialFront = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
@@ -383,7 +384,7 @@ function init()
 function skyboxload(imagePrefix){
 	var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
 	var imageSuffix = ".png";
-	var skyGeometry = new THREE.CubeGeometry( 5000, 5000, 5000 );
+	var skyGeometry = new THREE.CubeGeometry( 4000, 5000, 5000 );
 
 	var materialArray = [];
 	for (var i = 0; i < 6; i++)
@@ -632,6 +633,7 @@ function modelLoaded(geometry, rotation, modelNumber) {
     model.scale.set(scale,scale,scale);
     model.rotation.set(rotation[0],rotation[1],rotation[2]);
     model.castShadow = true;
+    model.receiveShadow = false;
 	
     scene.add(model);
     render();
