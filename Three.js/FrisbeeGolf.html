@@ -156,7 +156,6 @@ function init()
 
 	var spotlight = new THREE.SpotLight( 0xffffff, 2);
 
-	spotlight.target.position.set(0,0,0);
 	spotlight.position.set(2000,2000,1000)
 	spotlight.angle = 1;
 
@@ -201,8 +200,8 @@ function init()
 
 	var imagePrefix = "images/nightsky_";
 	var imagePrefixDay = "images/dawnmountain-";
-	skyboxload(imagePrefix);
 	skyboxload(imagePrefixDay);
+	skyboxload(imagePrefix);
 	for (var i =0; i<skyboxlist.length; i++){
 		scene.add(skyboxlist[i]);
 	}
@@ -272,8 +271,8 @@ function init()
 		m: false,
 		a: 0, // numeric slider
 		p: 25, //numeric slider
-		b: false, //boolean (checkbox)
-		c: true, // boolean (checkbox)
+		b: true, //boolean (checkbox)
+		c: false, // boolean (checkbox)
 		d: "#ffff00", // color (hex)
 		next: function(){ nextThrow()},
 		reset: function(){ resetDisc(Hole_Num)},
@@ -319,9 +318,10 @@ function init()
 		
 		if(value) {
 			nightsky.setValue(false);
-			scene.remove( skyboxlist[0]);
-			scene.add( skyboxlist[1]);
+			scene.remove( skyboxlist[1]);
+			scene.add( skyboxlist[0]);
 			disc.remove(discLight);
+			scene.add(light);
 		}
 	});
 
@@ -329,9 +329,10 @@ function init()
 	nightsky.onChange( function(value) {
 		if (value) {
 			daysky.setValue(false);
-			scene.remove( skyboxlist[1]);
-			scene.add( skyboxlist[0]);
+			scene.remove( skyboxlist[0]);
+			scene.add( skyboxlist[1]);
 			disc.add(discLight);
+			scene.remove(light);
 		}
 	});
 
@@ -342,9 +343,9 @@ function init()
 
 	gui.add( parameters, 'next').name("Take Next Throw").listen();
 
-	gui.add( parameters, 'h').name("Move to Next Hole").listen();
+	gui.add( parameters, 'h').name("Go to Next Hole").listen();
 
-	gui.add( parameters, 'reset' ).name("Reset Disc").listen();
+	gui.add( parameters, 'reset' ).name("Start Hole Over").listen();
 
 	gui.open();
 	
@@ -416,7 +417,8 @@ function resetDisc(numhole){
 	console.log(disc.position.x)
 	console.log(disc.position.z)
 	
-	
+	textMesh.position.set( -0.5 * textWidth + disc.position.x, 0, disc.position.z-100 );
+
 	installModel(0);
 	
 	
@@ -449,6 +451,9 @@ function nextThrow(){
 
 	textMesh.position.set( -0.5 * textWidth + disc.position.x, 0, disc.position.z-100 );
 	textMesh.rotation.x = Math.PI / 8;
+	if (disc.position.z < 0){
+		textMesh.rotation.y = Math.PI;
+	}
 	scene.add(textMesh);
 
 	disc.position.y = 40;
@@ -665,7 +670,6 @@ function update()
 	}
 	// if (disc.position.y <= -2){
 	// 	nextThrow();
-	// 	// alert("Ready for next throw!");
 	// }
 	
 	if ( keyboard.pressed("N") ) 
@@ -709,7 +713,7 @@ function disc_movement() {
 	if (direction_z>Pie/2) {
 		direction_z = Pie- direction_z;
 		z_modifier = -1
-		}
+	}
 	
 	
 	
@@ -770,10 +774,8 @@ function disc_movement() {
 	//&& (holey-2 < disc.position.y <holey+2) && (holez-2 < disc.position.z <holez+2)
 	if (holez[Hole_Num]-30 < disc.position.z && disc.position.z<holez[Hole_Num]+30 && holex[Hole_Num]-30 < disc.position.x && disc.position.x<holex[Hole_Num]+30 && holey-30 < disc.position.y && disc.position.y<holey+30){
 		InHole=1;
-		//alert("Made it! Press 'N' to go to next Hole");
-		//^^^^^^^^^^^ WE CANT USE ALERT BECASUE IT BREAKS CODE EXECUTION
-		
-		}
+
+	w}
 		
 	if (disc.position.z < -2400 || disc.position.z > 2400 || disc.position.x > 2400 || disc.position.x < -2400){
 		In_bounds = 1;
