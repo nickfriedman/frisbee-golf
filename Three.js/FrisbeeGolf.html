@@ -9,6 +9,7 @@
 <body>
 
 <script src="js/Three.js"></script>
+<script src="js/Three58.js"></script>
 <script src="js/Detector.js"></script>
 <script src="js/Stats.js"></script>
 <script src="js/OrbitControls.js"></script>
@@ -32,6 +33,31 @@
 <script src="fonts/droid_serif_bold.typeface.js"></script>
 
 <div id="ThreeJS" style="position: absolute; left:0px; top:0px"></div>
+<script id="vertexShader" type="x-shader/x-vertex">
+uniform vec3 viewVector;
+uniform float c;
+uniform float p;
+varying float intensity;
+void main() 
+{
+    vec3 vNormal = normalize( normalMatrix * normal );
+	vec3 vNormel = normalize( normalMatrix * viewVector );
+	intensity = pow( c - dot(vNormal, vNormel), p );
+	
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}
+</script>
+
+<!-- fragment shader a.k.a. pixel shader -->
+<script id="fragmentShader" type="x-shader/x-vertex"> 
+uniform vec3 glowColor;
+varying float intensity;
+void main() 
+{
+	vec3 glow = glowColor * intensity;
+    gl_FragColor = vec4( glow, 1.0 );
+}
+</script>
 <script>
 
 
@@ -161,7 +187,7 @@ function init()
 
 	spotlight.castShadow = true;
 	spotlight.shadowDarkness = 0.75;
-	spotlight.shadowCameraVisible = true;
+	spotlight.shadowCameraVisible = false;
 
 	spotlight.shadowCameraRight     =  50;
 	spotlight.shadowCameraLeft     = 50;
@@ -223,10 +249,6 @@ function init()
 	var material = new THREE.MeshLambertMaterial( {color: 0xffff00} );
     disc = new THREE.Mesh( geometry, material );
 	disc.position.set(0,40,1900);
-	var discLight = new THREE.PointLight(0xff0000); 
-	discLight.position.set( disc.position );
-	disc.add(discLight);	
-	scene.add(discLight);
 	scene.add( disc );
 
 	disc.castShadow = true;
@@ -240,6 +262,25 @@ function init()
 	pyramid.position.set(0, 3, -50);
 	pyramid.rotateOnAxis( new THREE.Vector3(1,0,0), 275);
 	disc.add( pyramid );
+
+	var customMaterial = new THREE.ShaderMaterial( 
+	{
+	    uniforms: 
+		{ 
+			"c":   { type: "f", value: 1.0 },
+			"p":   { type: "f", value: 0.2 },
+			glowColor: { type: "c", value: new THREE.Color(0x1eff00) },
+			viewVector: { type: "v3", value: camera.position }
+		},
+		vertexShader:   document.getElementById( 'vertexShader'   ).textContent,
+		fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
+		side: THREE.FrontSide,
+		blending: THREE.AdditiveBlending,
+		transparent: true
+	}   );
+	this.discGlow = new THREE.Mesh( geometry.clone(), customMaterial.clone() );
+	discGlow.position = disc.position;
+	discGlow.scale.multiplyScalar(1.2);
 
 	// add 3D text
 	var materialFront = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
@@ -320,8 +361,8 @@ function init()
 			nightsky.setValue(false);
 			scene.remove( skyboxlist[1]);
 			scene.add( skyboxlist[0]);
-			disc.remove(discLight);
 			scene.add(light);
+			scene.remove(discGlow);
 		}
 	});
 
@@ -331,8 +372,8 @@ function init()
 			daysky.setValue(false);
 			scene.remove( skyboxlist[0]);
 			scene.add( skyboxlist[1]);
-			disc.add(discLight);
 			scene.remove(light);
+			scene.add(discGlow);
 		}
 	});
 
@@ -407,11 +448,12 @@ function resetDisc(numhole){
 	//disc.rotation.y = 0;
 	//disc.rotation.x = 0;
 	disc.lookAt(camera.position);
+	discGlow.lookAt(camera.position);
 	
 	angleDeg -= 90
 	if (angleDeg <= -180) {
 		angleDeg = angleDeg+360;
-		}
+	}
 	directionAngle = ((angleDeg)/180)*3.14
 	console.log(directionAngle)
 	console.log(disc.position.x)
@@ -479,6 +521,7 @@ function nextThrow(){
 	pyramid.material.opacity = 1;
 	// disc.rotation.y = -m;
 	disc.lookAt(camera.position);
+	discGlow.lookAt(camera.position);
 	
 	angleDeg -= 90
 	if (angleDeg <= -180) {
@@ -650,10 +693,12 @@ function update()
 	}
 	if (keyboard.pressed("W")){
 		disc.rotation.x += positionAngle;
+		discGlow.rotation.x += positionAngle;
 		tiltAngle += rotateAngle;
 	}
 	else if (keyboard.pressed("S")){
 		disc.rotation.x -= positionAngle;
+		discGlow.rotation.x -= positionAngle;
 		tiltAngle -= rotateAngle;
 	}
 //console.log("disc:"); console.log(disc.rotation.y);
