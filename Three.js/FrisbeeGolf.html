@@ -151,19 +151,7 @@ function init()
 	light2.position.set( 1000,1000,1000 );
 	scene.add(light2);
 
-	// FLOOR
-	/*THREE.ImageUtils.crossOrigin = '';
-	var floorTexture = THREE.ImageUtils.loadTexture('images/grass-512.jpg');
-	// var floorTexture = new THREE.ImageUtils.loadTexture( 'images/grass.jpg' );
-	floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
-	floorTexture.repeat.set( 16, 16 );
-	var floorMaterial = new THREE.MeshBasicMaterial( { envMap: THREE.refraction, relfectivity: 1, map: floorTexture, side: THREE.BackSide } );
-	var floorGeometry = new THREE.PlaneGeometry(5000, 5000, 10, 10);
-	var floor = new THREE.Mesh(floorGeometry, floorMaterial);
-	floor.position.y = -5;
-	floor.rotation.x = Math.PI / 2;
-	floor.receiveShadow=true;
-	scene.add(floor); */
+	// FLOOR 
 
 	var floorTex = THREE.ImageUtils.loadTexture("images/grass-512.jpg");
 	floorTex.wrapS = floorTex.wrapT = THREE.RepeatWrapping;
@@ -201,29 +189,26 @@ function init()
 	var axes = new THREE.AxisHelper(100);
 	scene.add( axes );
 
-/*
-	//3d grass
-	var nTufts	= 5000
-	var positions	= new Array(nTufts)
-	for(var i = 0; i < nTufts; i++){
-		var gposition	= new THREE.Vector3()
-		gposition.x	= (Math.random()-0.5)*2000
-		gposition.z	= (Math.random()-0.5)*2000
-		positions[i]	= gposition
-	}
-	var mesh	= THREEx.createGrassTufts(positions);
-	scene.add(mesh);
 
-	// load the texture
-	var textureUrl		= THREEx.createGrassTufts.baseUrl+'/Three.js/images/grass01.png'
-	var material		= mesh.material
-	material.map		= THREE.ImageUtils.loadTexture(textureUrl)
-	material.alphaTest	= 0.7
-	var textureUrl		= THREEx.createGrassTufts.baseUrl+'images/grass01.png';
-	var material		= mesh.material;
-	material.map		= THREE.ImageUtils.loadTexture(textureUrl);
-	material.alphaTest	= 0.7;
-*/
+	// //3d grass
+	// var nTufts	= 5000;
+	// var positions	= new Array(nTufts);
+	// for(var i = 0; i < nTufts; i++){
+	// 	var gposition	= new THREE.Vector3()
+	// 	gposition.x	= (Math.random()-0.5)*2000
+	// 	gposition.z	= (Math.random()-0.5)*2000
+	// 	positions[i]	= gposition
+	// }
+	// var mesh	= THREEx.createGrassTufts(positions);
+	// scene.add(mesh);
+
+	// // load the texture
+	// var textureUrl		= THREEx.createGrassTufts.baseUrl+'/Three.js/images/grass01.png'
+	// var material		= mesh.material
+	// material.map		= THREE.ImageUtils.loadTexture(textureUrl)
+	// material.alphaTest	= 0.7
+
+
 	//skybox
 
 	var imagePrefix = "images/nightsky_";
@@ -305,6 +290,7 @@ function init()
 	var textWidth = textGeom.boundingBox.max.x - textGeom.boundingBox.min.x;
 
 	textMesh.position.set( -0.5 * textWidth, 0, 1800 );
+	console.log(-.5 * textWidth);
 	textMesh.rotation.x = Math.PI / 8;
 	scene.add(textMesh);
 
@@ -482,6 +468,28 @@ function resetDisc(numhole){
 function nextThrow(){
 	In_bounds = 0;
 	Score ++;
+
+
+	disc.position.y = 40;
+	camera.position.y = 50;
+	if (disc.position.x > 0)
+		camera.position.x = disc.position.x + (disc.position.x /1900)*300;
+	else if (disc.position.x < 0)
+		camera.position.x = disc.position.x + (disc.position.x /1900)*300;
+	else
+		camera.position.x =0;
+	if (disc.position.z > 0)
+		camera.position.z = disc.position.z + (disc.position.z /1900)*300;
+	else (disc.position.z < 0)
+		camera.position.z = disc.position.z + (disc.position.z /1900)*300;
+		
+	var angleDeg = Math.atan2(disc.position.z, disc.position.x ) * 180 / Math.PI;
+	
+	
+	//m = (model.position.z -disc.position.z) / (model.position.x - disc.position.x)
+
+	camera.lookAt(model.position);
+
 	scene.remove(textMesh);
 	// add 3D text
 	var materialFront = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
@@ -503,32 +511,13 @@ function nextThrow(){
 	textGeom.computeBoundingBox();
 	var textWidth = textGeom.boundingBox.max.x - textGeom.boundingBox.min.x;
 
-	textMesh.position.set( -0.5 * textWidth + disc.position.x, 0, disc.position.z-100 );
+	textMesh.position.set( -0.5 * textWidth + disc.position.x, 0, disc.position.z+100 );
 	textMesh.rotation.x = Math.PI / 8;
 	if (disc.position.z < 0){
 		textMesh.rotation.y = Math.PI;
 	}
 	scene.add(textMesh);
 
-	disc.position.y = 40;
-	camera.position.y = 50;
-	if (disc.position.x > 0)
-		camera.position.x = disc.position.x + (disc.position.x /1900)*300;
-	else if (disc.position.x < 0)
-		camera.position.x = disc.position.x + (disc.position.x /1900)*300;
-	else
-		camera.position.x =0;
-	if (disc.position.z > 0)
-		camera.position.z = disc.position.z + (disc.position.z /1900)*300;
-	else (disc.position.z < 0)
-		camera.position.z = disc.position.z + (disc.position.z /1900)*300;
-		
-	var angleDeg = Math.atan2(disc.position.z, disc.position.x ) * 180 / Math.PI;
-	
-	
-	//m = (model.position.z -disc.position.z) / (model.position.x - disc.position.x)
-
-	camera.lookAt(model.position);
 	pyramid.material.transparent = false;
 	pyramid.material.opacity = 1;
 	// disc.rotation.y = -m;
@@ -883,7 +872,8 @@ function disc_movement() {
 	camera.lookAt(disc.position)
 	
 
-
+	// textMesh.position.z -= z;
+	// textMesh.position.x += x;
 	
 	
 }	
