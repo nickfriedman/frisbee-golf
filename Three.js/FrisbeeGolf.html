@@ -255,8 +255,8 @@ function init()
 	{
 	    uniforms: 
 		{ 
-			"c":   { type: "f", value: 0.4 },
-			"p":   { type: "f", value: 0.4},
+			"c":   { type: "f", value: 1.0 },
+			"p":   { type: "f", value: 1.4},
 			glowColor: { type: "c", value: new THREE.Color(0x1eff00) },
 			viewVector: { type: "v3", value: camera.position }
 		},
@@ -709,8 +709,6 @@ function update()
 		discGlow.rotation.x -= positionAngle;
 		tiltAngle -= rotateAngle;
 	}
-//console.log("disc:"); console.log(disc.rotation.y);
-//console.log("arrow:"); console.log(directionAngle);
 
 
 	if ( keyboard.pressed("space") ){
@@ -866,6 +864,7 @@ function disc_movement() {
 	//&& (holey-2 < disc.position.y <holey+2) && (holez-2 < disc.position.z <holez+2)
 	if (holez[Hole_Num]-30 < disc.position.z && disc.position.z<holez[Hole_Num]+30 && holex[Hole_Num]-30 < disc.position.x && disc.position.x<holex[Hole_Num]+30 && holey-30 < disc.position.y && disc.position.y<holey+30){
 		InHole=1;
+		// change_hole(Hole_Num)
 
 	}
 		
