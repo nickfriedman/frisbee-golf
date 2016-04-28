@@ -75,6 +75,8 @@ var disc;
 var pyramid;
 var Score = 0;
 var Par =3;
+var Overall = 0;
+var Sign = "-Even";
 
 var gravity = 3;
 var powerdisc = 25;
@@ -316,8 +318,8 @@ function init()
 		c: false, // boolean (checkbox)
 		d: "#ffff00", // color (hex)
 		next: function(){ nextThrow()},
-		reset: function(){ resetDisc(Hole_Num)},
-		h: function(){ change_hole(Hole_Num)}
+		h: function(){ change_hole(Hole_Num)},
+		reset: function(){ resetDisc(Hole_Num)}
 	};
 
 	var minimap = gui.add(parameters, 'm').name("Mini Map").listen();
@@ -423,6 +425,7 @@ function resetDisc(numhole){
 	directionAngle = 0;
 	tiltAngle = 0;
 	InHole = 0;
+	Score = 0;
 
 	disc.position.set(Locations[0], 40, Locations[2]);
 	//camera.position.set(Locations[0],50,Locations[2]+100);
@@ -458,7 +461,16 @@ function resetDisc(numhole){
 	console.log(directionAngle)
 	console.log(disc.position.x)
 	console.log(disc.position.z)
-	
+
+	var textGeom = new THREE.TextGeometry( "Score: " + Score + "   Par: "+Par, 
+	{
+		size: 10, height: 4, curveSegments: 3,
+		font: "helvetiker", weight: "bold", style: "normal",
+		bevelThickness: 1, bevelSize: 2, bevelEnabled: true,
+		material: 0, extrudeMaterial: 1
+	});
+	textGeom.computeBoundingBox();	
+	var textWidth = textGeom.boundingBox.max.x - textGeom.boundingBox.min.x;
 	textMesh.position.set( -0.5 * textWidth + disc.position.x, 0, disc.position.z-100 );
 
 	installModel(0);
@@ -734,11 +746,50 @@ function change_hole(new_hole) {
 	console.log("changing hole")
 	if (new_hole != 3)
 		Hole_Num = new_hole+1;
+
+	Score ++;
+	Overall = Score - Par;
+	if (Overall > 0){
+		Sign = "-Over";
+	}
+	else if (Overall <0){
+		Sign = "";
+	}
+
+	scene.remove(textMesh);
 	
 	InHole=0
 	Score = 0;
 	Par =4;
+
+	// add 3D text
+	var materialFront = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+	var materialSide = new THREE.MeshBasicMaterial( { color: 0x000088 } );
+	var materialArray = [ materialFront, materialSide ];
+	var textGeom = new THREE.TextGeometry( "Score: " + Score + "   Par: "+Par +"   Overall: " +Overall+Sign, 
+	{
+		size: 10, height: 4, curveSegments: 3,
+		font: "helvetiker", weight: "bold", style: "normal",
+		bevelThickness: 1, bevelSize: 2, bevelEnabled: true,
+		material: 0, extrudeMaterial: 1
+	});
+	// font: helvetiker, gentilis, droid sans, droid serif, optimer
+	// weight: normal, bold
 	
+	var textMaterial = new THREE.MeshFaceMaterial(materialArray);
+	textMesh = new THREE.Mesh(textGeom, textMaterial );
+	
+	textGeom.computeBoundingBox();
+	var textWidth = textGeom.boundingBox.max.x - textGeom.boundingBox.min.x;
+
+	textMesh.position.set( -0.5 * textWidth + disc.position.x, 0, disc.position.z-100 );
+	textMesh.rotation.x = Math.PI / 8;
+	if (disc.position.z < 0){
+		textMesh.rotation.y = Math.PI;
+	}
+	textMesh.lookAt(model.position);
+	textMesh.rotation.y = Math.PI/2;
+	scene.add(textMesh);
 	resetDisc(Hole_Num);
 }
 
@@ -820,7 +871,7 @@ function disc_movement() {
 	if (holez[Hole_Num]-30 < disc.position.z && disc.position.z<holez[Hole_Num]+30 && holex[Hole_Num]-30 < disc.position.x && disc.position.x<holex[Hole_Num]+30 && holey-30 < disc.position.y && disc.position.y<holey+30){
 		InHole=1;
 
-	w}
+	}
 		
 	if (disc.position.z < -2400 || disc.position.z > 2400 || disc.position.x > 2400 || disc.position.x < -2400){
 		In_bounds = 1;
