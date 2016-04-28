@@ -5,3 +5,9 @@ Zach Lazow
 Ethan Jones
 
 This is a frisbee-golf computer graphics game. 
+
+A: Move direction arrow left
+D: Move direction arrow right
+W: Tilt frisbee up
+S: Tilt frisbee down
+Spacebar: Throw frisbee
