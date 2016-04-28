@@ -176,7 +176,7 @@ function init()
 	spotlight.angle = .75;
 
 	spotlight.castShadow = true;
-	spotlight.shadowDarkness = 0.75;
+	spotlight.shadowDarkness = 2;
 	spotlight.shadowCameraVisible = false;
 
 	spotlight.shadowCameraRight     =  5;
@@ -187,8 +187,8 @@ function init()
 	
 
 	// axes
-	var axes = new THREE.AxisHelper(100);
-	scene.add( axes );
+	//var axes = new THREE.AxisHelper(100);
+	//scene.add( axes );
 
 
 	// //3d grass
@@ -234,7 +234,7 @@ function init()
 	// model.recieveShadow = false;
 
 	var geometry = new THREE.CylinderGeometry( 10, 10, 1, 60 );
-	var material = new THREE.MeshLambertMaterial( {color: 0xffff00} );
+	var material = new THREE.MeshPhongMaterial( {map: THREE.ImageUtils.loadTexture("images/blueplasma.jpg")} );
     disc = new THREE.Mesh( geometry, material );
 	disc.position.set(0,40,1900);
 	scene.add( disc );
@@ -255,8 +255,8 @@ function init()
 	{
 	    uniforms: 
 		{ 
-			"c":   { type: "f", value: 1.0 },
-			"p":   { type: "f", value: 0.2 },
+			"c":   { type: "f", value: 0.4 },
+			"p":   { type: "f", value: 0.4},
 			glowColor: { type: "c", value: new THREE.Color(0x1eff00) },
 			viewVector: { type: "v3", value: camera.position }
 		},
@@ -264,7 +264,7 @@ function init()
 		fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
 		side: THREE.FrontSide,
 		blending: THREE.AdditiveBlending,
-		transparent: true
+		transparent: true,
 	}   );
 	this.discGlow = new THREE.Mesh( geometry.clone(), customMaterial.clone() );
 	discGlow.position = disc.position;
@@ -830,7 +830,7 @@ function disc_movement() {
 				"images/particle.png"
 			),
 			blending: THREE.AdditiveBlending,
-			transparent: true
+			transparent: true,
 		});
 	
 	// now create the individual particles
@@ -841,7 +841,7 @@ function disc_movement() {
 		var pX = Math.random() * 10 - 5 ,
 			pY = Math.random() * 10 - 5,
 			pZ = Math.random() * 10 - 5,
-		    particle = new THREE.Vector3(disc.position.x + pX, disc.position.y + pY, disc.position.z + pZ);
+		    particle = new THREE.Vector3(disc.position.x + pX, disc.position.y+ pY, disc.position.z + pZ);
 
 		// add it to the geometry
 		particles.vertices.push(particle);
