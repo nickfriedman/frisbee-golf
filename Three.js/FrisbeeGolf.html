@@ -450,9 +450,6 @@ function resetDisc(numhole){
 		angleDeg = angleDeg+360;
 	}
 	directionAngle = ((angleDeg)/180)*3.14
-	console.log(directionAngle)
-	console.log(disc.position.x)
-	console.log(disc.position.z)
 
 	var textGeom = new THREE.TextGeometry( "Score: " + Score + "   Par: "+Par, 
 	{
@@ -535,9 +532,6 @@ function nextThrow(){
 		angleDeg = angleDeg+360;
 		}
 	directionAngle = ((angleDeg)/180)*3.14
-	console.log(directionAngle)
-	console.log(disc.position.x)
-	console.log(disc.position.z)
 	//directionAngle = 0;
 	//pyramid.rotateOnAxis( new THREE.Vector3(1,0,0), 275);
 
@@ -671,9 +665,19 @@ function update()
 	}
 	else if ( keyboard.pressed("3") ) 
 	{ 
-		// View from Behind disc
-		camera.position.set(0,50,2000);
-		camera.lookAt(scene.position);
+	// View from Behind disc
+		camera.position.y = 50;
+		if (disc.position.x > 0)
+			camera.position.x = disc.position.x + (disc.position.x /1900)*200;
+		else if (disc.position.x < 0)
+			camera.position.x = disc.position.x + (disc.position.x /1900)*200;
+		else
+			camera.position.x =0;
+		if (disc.position.z > 0)
+			camera.position.z = disc.position.z + (disc.position.z /1900)*200;
+		else (disc.position.z < 0)
+			camera.position.z = disc.position.z + (disc.position.z /1900)*200;
+		camera.lookAt(model.position);
 	}	
 
 	//rotate direction arrow
@@ -810,7 +814,6 @@ function disc_movement() {
 	x = (powerdisc *(direction_x /(Pie/2)))
 	z = powerdisc * (z_modifier * ((Pie/2) - direction_z)/(Pie/2));
 	y = powerdisc*tiltAngle - gravity;
-	console.log(directionAngle)
 	gravity += .03;
 	
 	directionAngle = directionAngle + wind/5000
@@ -818,10 +821,6 @@ function disc_movement() {
 	disc.position.z -= z;
 	disc.position.y += y;
 	disc.position.x += x;
-	console.log(x)
-	console.log("^^^ x")
-	console.log(disc.position.x)
-	//console.log(z)
 
 	//TRYING TO ADD PARTICLE SYSTEM
 	var particleCount = 10,
@@ -859,9 +858,7 @@ function disc_movement() {
 	
 	// add it to the scene
 	scene.add(particleSystem);
-	//
 		
-	//&& (holey-2 < disc.position.y <holey+2) && (holez-2 < disc.position.z <holez+2)
 	if (holez[Hole_Num]-30 < disc.position.z && disc.position.z<holez[Hole_Num]+30 && holex[Hole_Num]-30 < disc.position.x && disc.position.x<holex[Hole_Num]+30 && holey-30 < disc.position.y && disc.position.y<holey+30){
 		InHole=1;
 		// change_hole(Hole_Num)
@@ -876,11 +873,7 @@ function disc_movement() {
 	camera.position.y += y;
 	camera.position.x += x;
 	camera.lookAt(disc.position)
-	
 
-	// textMesh.position.z -= z;
-	// textMesh.position.x += x;
-	
 	
 }	
 	
