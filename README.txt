@@ -20,3 +20,5 @@ Spacebar: Throw frisbee, and allow the frisbee to continue to move.
 This runs on both Safari and Firefox.
 
 We accomplished all our objectives except we haven't been able to get the trees and hole to have shadows, only the disc. 
+
+Check out the code at github.com/nickfriedman/frisbee-golf
