@@ -1,7 +1,7 @@
 README
 
 Nicholas Friedman
-Zach Lazow
+Zachary Lazow
 Ethan Jones
 
 This is a frisbee-golf computer graphics game. 
@@ -10,8 +10,11 @@ A: Move direction arrow left
 D: Move direction arrow right
 W: Tilt frisbee up
 S: Tilt frisbee down
-Spacebar: Throw frisbee
+Spacebar: Throw frisbee, and allow the frisbee to continue to move.
 
-This runs on both Safari and Firefox.
+1: Return camera to behind the disc.
+2: Minimap camera that will take a topdown view of the field.
+
+This runs on both Safari and Firefox, though it tends to work better on Safari.
 
 We accomplished all our objectives except we haven't been able to get the trees and hole to have shadows. 
